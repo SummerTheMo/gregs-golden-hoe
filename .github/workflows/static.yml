@@ -1,5 +1,5 @@
-# Simple workflow for deploying static content to GitHub Pages
-name: Deploy static content to Pages
+# Deploy static content to GitHub Pages
+name: Deploy to GitHub Pages
 
 on:
   # Runs on pushes targeting the default branch
@@ -22,7 +22,6 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  # Single deploy job since we're just deploying
   deploy:
     environment:
       name: github-pages
@@ -31,13 +30,26 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Inject Google Analytics ID
+        run: |
+          # Replace the placeholder with the actual GA Measurement ID from secrets
+          if [ -n "${{ secrets.GA_MEASUREMENT_ID }}" ]; then
+            sed -i "s/__GA_MEASUREMENT_ID__/${{ secrets.GA_MEASUREMENT_ID }}/g" index.html
+            echo "Google Analytics ID injected successfully"
+          else
+            echo "Warning: GA_MEASUREMENT_ID secret not set, analytics will be disabled"
+          fi
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Upload entire repository
+          # Upload the entire repository
           path: '.'
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
