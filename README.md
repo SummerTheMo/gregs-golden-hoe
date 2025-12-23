@@ -47,6 +47,14 @@ Help **Greg**, a friendly brown recluse spider, explore an 8-inch × 8-inch dirt
 - **10% Chance** — Golden hoe has a 1-in-10 probability per dig
 - **Hidden Treasures** — Discover tools and vegetables along the way
 
+### Inventory System
+- **Inventory Bar** — Displays above the game grid
+- **Item Found Overlay** — When you discover an item:
+  - Semi-transparent background appears
+  - Item displayed at 4× size with glowing gold outline
+  - "Item Found!" title with item name
+- **Fly-to-Inventory Animation** — After 3 seconds, item scales and pans into inventory
+
 ### Hidden Items
 | Tools | Vegetables |
 |-------|------------|
@@ -64,15 +72,22 @@ Help **Greg**, a friendly brown recluse spider, explore an 8-inch × 8-inch dirt
 
 ### Game States
 1. **Playing** — Explore and dig freely
-2. **Celebrating** — 15-second victory dance with confetti
-3. **Won** — View your stats and play again
+2. **Showing Item** — 3-second item discovery overlay
+3. **Celebrating** — 15-second victory dance with confetti
+4. **Won** — View your collected items and play again
+
+---
+
+## 🐛 Support Bug Conservation
+
+When you win, you'll have the option to **donate to entomology and bug conservation works**! Help protect the amazing insects and arachnids that inspire games like this.
 
 ---
 
 ## 🏗️ Technical Details
 
 ### Architecture
-- **Single HTML File** — Complete game in one file (~45KB)
+- **Single HTML File** — Complete game in one file (~55KB)
 - **No External Dependencies** — Pure HTML5, CSS3, and ES6+ JavaScript
 - **SVG Sprites** — Scalable pixel-art graphics rendered inline
 - **requestAnimationFrame** — Smooth 60 FPS game loop
@@ -101,18 +116,9 @@ gregs-golden-hoe/
 
 1. Move Greg around the 8×8 grid using arrow keys
 2. Click to dig at Greg's current position
-3. Find hidden items to increase your score
+3. Collect items in your inventory
 4. Keep digging until you find the **Golden Hoe**!
 5. Celebrate your victory! 🎉
-
----
-
-## 📊 Stats Tracked
-
-- **Position** — Greg's current coordinates
-- **Digs** — Total squares excavated
-- **Items Found** — Treasures discovered
-- **Remaining** — Undug squares left
 
 ---
 
@@ -121,10 +127,11 @@ gregs-golden-hoe/
 Want to modify the game? Key constants are at the top of the JavaScript section:
 
 ```javascript
-const GRID_SIZE = 8;              // Grid dimensions
-const GOLDEN_HOE_CHANCE = 0.10;   // 10% per dig
-const CELEBRATION_DURATION = 15000; // 15 seconds
-const MOVE_COOLDOWN = 100;        // Prevent spam
+const GRID_SIZE = 8;                  // Grid dimensions
+const GOLDEN_HOE_CHANCE = 0.10;       // 10% per dig
+const CELEBRATION_DURATION = 15000;   // 15 seconds
+const ITEM_DISPLAY_DURATION = 3000;   // Item overlay time
+const ITEM_FLY_DURATION = 800;        // Fly animation time
 ```
 
 ---
