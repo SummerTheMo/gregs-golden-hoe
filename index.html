@@ -618,6 +618,218 @@
             height: 100%;
             filter: drop-shadow(0 0 10px var(--color-gold));
         }
+
+        /* ============================================
+           MOBILE D-PAD CONTROLS
+           ============================================ */
+        .dpad-container {
+            display: none;
+            /* Hidden by default, shown on touch devices */
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 50;
+        }
+
+        .dpad {
+            display: grid;
+            grid-template-columns: 60px 60px 60px;
+            grid-template-rows: 60px 60px 60px;
+            gap: 4px;
+        }
+
+        .dpad-btn {
+            width: 60px;
+            height: 60px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid var(--color-gold);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--color-gold);
+            cursor: pointer;
+            transition: all 0.1s ease;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .dpad-btn:active {
+            background: rgba(255, 215, 0, 0.3);
+            transform: scale(0.95);
+        }
+
+        .dpad-btn.dig-btn {
+            background: rgba(76, 175, 80, 0.7);
+            border-color: var(--color-green);
+            color: var(--color-white);
+            font-size: 1.2rem;
+        }
+
+        .dpad-btn.dig-btn:active {
+            background: rgba(76, 175, 80, 0.9);
+        }
+
+        .dpad-empty {
+            /* Empty grid cells for d-pad layout */
+            visibility: hidden;
+        }
+
+        /* Show d-pad on touch devices */
+        @media (pointer: coarse) {
+            .dpad-container {
+                display: block;
+            }
+
+            .instructions {
+                display: none;
+                /* Hide keyboard instructions on touch */
+            }
+
+            .game-container {
+                padding-bottom: 220px;
+                /* Make room for d-pad */
+            }
+        }
+
+        /* ============================================
+           RESPONSIVE - MOBILE SCREENS
+           ============================================ */
+        @media (max-width: 650px) {
+            :root {
+                --cell-size: 42px;
+                --sprite-size: 28px;
+                --item-size: 22px;
+            }
+
+            .game-title {
+                font-size: 1.5rem;
+                letter-spacing: 2px;
+            }
+
+            .game-container {
+                padding: 10px;
+                gap: 12px;
+            }
+
+            .game-grid {
+                padding: 6px;
+                border-width: 3px;
+            }
+
+            .inventory-bar {
+                min-width: auto;
+                width: 100%;
+                max-width: 360px;
+                padding: 8px 12px;
+            }
+
+            .inventory-slot {
+                width: 32px;
+                height: 32px;
+            }
+
+            .inventory-slot svg {
+                width: 24px;
+                height: 24px;
+            }
+
+            .inventory-label {
+                font-size: 0.85rem;
+            }
+
+            .celebration-text {
+                font-size: 1.8rem;
+            }
+
+            .win-title {
+                font-size: 2.5rem;
+            }
+
+            .win-stats {
+                padding: 20px;
+            }
+
+            .win-stat {
+                font-size: 1rem;
+            }
+
+            .restart-btn {
+                padding: 12px 30px;
+                font-size: 1.2rem;
+            }
+
+            .donate-btn {
+                padding: 10px 20px;
+                font-size: 0.85rem;
+                text-align: center;
+            }
+
+            .item-found-title {
+                font-size: 1.8rem;
+            }
+
+            .item-found-display {
+                width: 100px;
+                height: 100px;
+            }
+
+            .item-found-display svg {
+                width: 80px;
+                height: 80px;
+            }
+
+            .item-found-name {
+                font-size: 1.2rem;
+            }
+
+            .dpad-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 1.2rem;
+            }
+
+            .dpad {
+                grid-template-columns: 50px 50px 50px;
+                grid-template-rows: 50px 50px 50px;
+            }
+        }
+
+        /* Extra small screens */
+        @media (max-width: 400px) {
+            :root {
+                --cell-size: 36px;
+                --sprite-size: 24px;
+                --item-size: 18px;
+            }
+
+            .game-title {
+                font-size: 1.2rem;
+            }
+
+            .inventory-slot {
+                width: 28px;
+                height: 28px;
+            }
+
+            .inventory-slot svg {
+                width: 20px;
+                height: 20px;
+            }
+
+            .dpad-btn {
+                width: 45px;
+                height: 45px;
+                font-size: 1rem;
+            }
+
+            .dpad {
+                grid-template-columns: 45px 45px 45px;
+                grid-template-rows: 45px 45px 45px;
+            }
+        }
     </style>
 </head>
 
@@ -637,7 +849,7 @@
         <!-- Game Grid -->
         <div class="game-grid" id="gameGrid"></div>
 
-        <!-- Instructions -->
+        <!-- Instructions (hidden on touch devices) -->
         <div class="instructions">
             <span class="key-hint">↑</span>
             <span class="key-hint">↓</span>
@@ -645,6 +857,21 @@
             <span class="key-hint">→</span>
             Move Greg &nbsp;|&nbsp;
             <span class="key-hint">Click</span> to Dig
+        </div>
+    </div>
+
+    <!-- Mobile D-Pad Controls -->
+    <div class="dpad-container" id="dpadContainer">
+        <div class="dpad">
+            <div class="dpad-empty"></div>
+            <button class="dpad-btn" id="dpadUp">↑</button>
+            <div class="dpad-empty"></div>
+            <button class="dpad-btn" id="dpadLeft">←</button>
+            <button class="dpad-btn dig-btn" id="dpadDig">DIG</button>
+            <button class="dpad-btn" id="dpadRight">→</button>
+            <div class="dpad-empty"></div>
+            <button class="dpad-btn" id="dpadDown">↓</button>
+            <div class="dpad-empty"></div>
         </div>
     </div>
 
@@ -1543,6 +1770,64 @@
 
         // Prevent context menu on grid (for cleaner experience)
         document.getElementById('gameGrid').addEventListener('contextmenu', e => e.preventDefault());
+
+        // ============================================
+        // D-PAD TOUCH CONTROLS
+        // ============================================
+
+        /**
+         * Handle d-pad button press for mobile controls
+         * @param {string} direction - 'up', 'down', 'left', 'right', or 'dig'
+         */
+        function handleDpadPress(direction) {
+            // Ignore input if not in playing state
+            if (GameState.gameState !== GAME_STATES.PLAYING) {
+                return;
+            }
+
+            if (direction === 'dig') {
+                // Perform dig at current position
+                performDig(GameState.playerPosition.x, GameState.playerPosition.y);
+                return;
+            }
+
+            // Handle movement
+            let newX = GameState.playerPosition.x;
+            let newY = GameState.playerPosition.y;
+
+            switch (direction) {
+                case 'up':
+                    newY = Math.max(0, newY - 1);
+                    break;
+                case 'down':
+                    newY = Math.min(GRID_SIZE - 1, newY + 1);
+                    break;
+                case 'left':
+                    newX = Math.max(0, newX - 1);
+                    break;
+                case 'right':
+                    newX = Math.min(GRID_SIZE - 1, newX + 1);
+                    break;
+            }
+
+            if (newX !== GameState.playerPosition.x || newY !== GameState.playerPosition.y) {
+                GameState.playerPosition.x = newX;
+                GameState.playerPosition.y = newY;
+                updateGregPosition();
+            }
+        }
+
+        // Add d-pad event listeners (both touch and click for flexibility)
+        document.getElementById('dpadUp').addEventListener('click', () => handleDpadPress('up'));
+        document.getElementById('dpadDown').addEventListener('click', () => handleDpadPress('down'));
+        document.getElementById('dpadLeft').addEventListener('click', () => handleDpadPress('left'));
+        document.getElementById('dpadRight').addEventListener('click', () => handleDpadPress('right'));
+        document.getElementById('dpadDig').addEventListener('click', () => handleDpadPress('dig'));
+
+        // Prevent default touch behaviors on d-pad for better mobile experience
+        document.getElementById('dpadContainer').addEventListener('touchstart', e => {
+            e.preventDefault();
+        }, { passive: false });
 
         // ============================================
         // START THE GAME!
