@@ -1,9 +1,8 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Greg's Golden Hoe - Arcade Game</title>
     <!--
     =====================================================
@@ -24,951 +23,984 @@
     <!-- Google Analytics 4 -->
     <!-- GA_MEASUREMENT_ID will be replaced by GitHub Actions during deployment -->
     <script>
-        (function () {
-            var GA_MEASUREMENT_ID = '__GA_MEASUREMENT_ID__';
+      (function () {
+        var GA_MEASUREMENT_ID = "__GA_MEASUREMENT_ID__";
 
-            // Only initialize if placeholder has been replaced with actual ID
-            if (GA_MEASUREMENT_ID && GA_MEASUREMENT_ID !== '__GA_MEASUREMENT_ID__' && GA_MEASUREMENT_ID.startsWith('G-')) {
-                // Load gtag.js dynamically
-                var script = document.createElement('script');
-                script.async = true;
-                script.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_MEASUREMENT_ID;
-                document.head.appendChild(script);
+        // Only initialize if placeholder has been replaced with actual ID
+        if (
+          GA_MEASUREMENT_ID &&
+          GA_MEASUREMENT_ID !== "__GA_MEASUREMENT_ID__" &&
+          GA_MEASUREMENT_ID.startsWith("G-")
+        ) {
+          // Load gtag.js dynamically
+          var script = document.createElement("script");
+          script.async = true;
+          script.src =
+            "https://www.googletagmanager.com/gtag/js?id=" + GA_MEASUREMENT_ID;
+          document.head.appendChild(script);
 
-                // Initialize gtag
-                window.dataLayer = window.dataLayer || [];
-                function gtag() { dataLayer.push(arguments); }
-                gtag('js', new Date());
-                gtag('config', GA_MEASUREMENT_ID);
+          // Initialize gtag
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag("js", new Date());
+          gtag("config", GA_MEASUREMENT_ID);
 
-                console.log('Google Analytics initialized with ID:', GA_MEASUREMENT_ID);
-            }
-        })();
+          console.log(
+            "Google Analytics initialized with ID:",
+            GA_MEASUREMENT_ID,
+          );
+        }
+      })();
     </script>
     <style>
-        /* ============================================
+      /* ============================================
            CSS VARIABLES & RESET
            ============================================ */
-        :root {
-            /* Retro arcade color palette (limited to 12 colors) */
-            --color-bg-dark: #1a1a2e;
-            --color-bg-medium: #16213e;
-            --color-dirt-dark: #5d4037;
-            --color-dirt-light: #8d6e63;
-            --color-dirt-dug: #a1887f;
-            --color-gold: #ffd700;
-            --color-gold-light: #fff59d;
-            --color-green: #4caf50;
-            --color-red: #e53935;
-            --color-blue: #2196f3;
-            --color-white: #fafafa;
-            --color-gray: #9e9e9e;
+      :root {
+        /* Retro arcade color palette (limited to 12 colors) */
+        --color-bg-dark: #1a1a2e;
+        --color-bg-medium: #16213e;
+        --color-dirt-dark: #5d4037;
+        --color-dirt-light: #8d6e63;
+        --color-dirt-dug: #a1887f;
+        --color-gold: #ffd700;
+        --color-gold-light: #fff59d;
+        --color-green: #4caf50;
+        --color-red: #e53935;
+        --color-blue: #2196f3;
+        --color-white: #fafafa;
+        --color-gray: #9e9e9e;
 
-            /* Grid dimensions */
-            --grid-size: 8;
-            --cell-size: 70px;
-            --sprite-size: 45px;
-            --item-size: 35px;
+        /* Grid dimensions */
+        --grid-size: 8;
+        --cell-size: 70px;
+        --sprite-size: 45px;
+        --item-size: 35px;
 
-            /* Animation timing */
-            --dance-duration: 0.5s;
-        }
+        /* Animation timing */
+        --dance-duration: 0.5s;
+      }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
-        /* ============================================
+      /* ============================================
            BASE LAYOUT
            ============================================ */
-        body {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, var(--color-bg-dark) 0%, var(--color-bg-medium) 100%);
-            font-family: 'Courier New', monospace;
-            color: var(--color-white);
-            overflow: auto;
+      body {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(
+          135deg,
+          var(--color-bg-dark) 0%,
+          var(--color-bg-medium) 100%
+        );
+        font-family: "Courier New", monospace;
+        color: var(--color-white);
+        overflow: auto;
+      }
+
+      .game-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+        padding: 20px;
+      }
+
+      /* ============================================
+           HEADER & TITLE
+           ============================================ */
+      .game-title {
+        font-size: 2.5rem;
+        text-transform: uppercase;
+        letter-spacing: 4px;
+        text-shadow:
+          0 0 10px var(--color-gold),
+          0 0 20px var(--color-gold),
+          0 0 30px var(--color-gold);
+        animation: titleGlow 2s ease-in-out infinite alternate;
+      }
+
+      @keyframes titleGlow {
+        from {
+          text-shadow:
+            0 0 10px var(--color-gold),
+            0 0 20px var(--color-gold);
+        }
+
+        to {
+          text-shadow:
+            0 0 20px var(--color-gold-light),
+            0 0 40px var(--color-gold);
+        }
+      }
+
+      /* ============================================
+           GAME GRID
+           ============================================ */
+      .game-grid {
+        display: grid;
+        grid-template-columns: repeat(var(--grid-size), var(--cell-size));
+        grid-template-rows: repeat(var(--grid-size), var(--cell-size));
+        gap: 2px;
+        padding: 10px;
+        background: #3e2723;
+        border: 4px solid var(--color-gold);
+        border-radius: 8px;
+        box-shadow:
+          0 0 20px rgba(255, 215, 0, 0.3),
+          inset 0 0 30px rgba(0, 0, 0, 0.5);
+      }
+
+      .grid-cell {
+        width: var(--cell-size);
+        height: var(--cell-size);
+        position: relative;
+        cursor: pointer;
+        transition: transform 0.1s ease;
+        image-rendering: pixelated;
+      }
+
+      .grid-cell:hover {
+        transform: scale(1.02);
+        z-index: 1;
+      }
+
+      /* Undugged dirt texture */
+      .grid-cell.undug {
+        background:
+          linear-gradient(45deg, var(--color-dirt-dark) 25%, transparent 25%),
+          linear-gradient(-45deg, var(--color-dirt-dark) 25%, transparent 25%),
+          linear-gradient(45deg, transparent 75%, var(--color-dirt-light) 75%),
+          linear-gradient(-45deg, transparent 75%, var(--color-dirt-light) 75%);
+        background-size: 10px 10px;
+        background-color: var(--color-dirt-dark);
+        border: 2px solid #4e342e;
+      }
+
+      /* Dug cell appearance */
+      .grid-cell.dug {
+        background: var(--color-dirt-dug);
+        border: 2px solid #8d6e63;
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+      }
+
+      /* ============================================
+           GREG THE SPIDER SPRITE
+           ============================================ */
+      .greg-sprite {
+        position: absolute;
+        width: var(--sprite-size);
+        height: var(--sprite-size);
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 10;
+        transition: all 0.15s ease;
+        image-rendering: pixelated;
+      }
+
+      /* Dancing animation for celebration */
+      .greg-sprite.dancing {
+        animation: gregDance var(--dance-duration) ease-in-out infinite
+          alternate;
+      }
+
+      @keyframes gregDance {
+        0% {
+          transform: translate(-50%, -50%) rotate(-15deg) scale(1.1);
+        }
+
+        100% {
+          transform: translate(-50%, -50%) rotate(15deg) scale(1.1);
+        }
+      }
+
+      /* ============================================
+           ITEM SPRITES
+           ============================================ */
+      .item-sprite {
+        position: absolute;
+        width: var(--item-size);
+        height: var(--item-size);
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 5;
+        image-rendering: pixelated;
+      }
+
+      /* Golden hoe special shimmer effect */
+      .item-sprite.golden-hoe {
+        animation: shimmer 1s ease-in-out infinite;
+        filter: drop-shadow(0 0 5px var(--color-gold));
+      }
+
+      @keyframes shimmer {
+        0%,
+        100% {
+          filter: drop-shadow(0 0 5px var(--color-gold)) brightness(1);
+        }
+
+        50% {
+          filter: drop-shadow(0 0 15px var(--color-gold-light)) brightness(1.3);
+        }
+      }
+
+      /* ============================================
+           DIG ANIMATION
+           ============================================ */
+      .dig-effect {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        pointer-events: none;
+        z-index: 15;
+      }
+
+      .dig-particle {
+        position: absolute;
+        width: 6px;
+        height: 6px;
+        background: var(--color-dirt-dark);
+        border-radius: 50%;
+        animation: particleFly 0.5s ease-out forwards;
+      }
+
+      @keyframes particleFly {
+        0% {
+          transform: translate(0, 0) scale(1);
+          opacity: 1;
+        }
+
+        100% {
+          transform: translate(var(--tx), var(--ty)) scale(0);
+          opacity: 0;
+        }
+      }
+
+      /* ============================================
+           CELEBRATION OVERLAY
+           ============================================ */
+      .celebration-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 20px;
+        z-index: 100;
+      }
+
+      .celebration-overlay.active {
+        display: flex;
+        animation: fadeIn 0.3s ease;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+
+        to {
+          opacity: 1;
+        }
+      }
+
+      .celebration-text {
+        font-size: 3rem;
+        color: var(--color-gold);
+        text-shadow:
+          0 0 20px var(--color-gold),
+          0 0 40px var(--color-gold),
+          0 0 60px var(--color-gold);
+        animation: pulseText 0.5s ease-in-out infinite alternate;
+      }
+
+      @keyframes pulseText {
+        from {
+          transform: scale(1);
+        }
+
+        to {
+          transform: scale(1.1);
+        }
+      }
+
+      .celebration-timer {
+        font-size: 1.5rem;
+        color: var(--color-white);
+      }
+
+      /* Confetti particles */
+      .confetti {
+        position: fixed;
+        width: 10px;
+        height: 10px;
+        z-index: 99;
+        animation: confettiFall 3s linear forwards;
+      }
+
+      @keyframes confettiFall {
+        0% {
+          transform: translateY(-100vh) rotate(0deg);
+          opacity: 1;
+        }
+
+        100% {
+          transform: translateY(100vh) rotate(720deg);
+          opacity: 0;
+        }
+      }
+
+      /* ============================================
+           WIN SCREEN
+           ============================================ */
+      .win-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          135deg,
+          var(--color-bg-dark) 0%,
+          var(--color-bg-medium) 100%
+        );
+        display: none;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 30px;
+        z-index: 200;
+      }
+
+      .win-screen.active {
+        display: flex;
+        animation: fadeIn 0.5s ease;
+      }
+
+      .win-title {
+        font-size: 4rem;
+        color: var(--color-gold);
+        text-shadow:
+          0 0 20px var(--color-gold),
+          0 0 40px var(--color-gold);
+        animation: titleGlow 2s ease-in-out infinite alternate;
+      }
+
+      .win-stats {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        padding: 30px;
+        background: rgba(0, 0, 0, 0.5);
+        border: 2px solid var(--color-gold);
+        border-radius: 12px;
+        text-align: center;
+      }
+
+      .win-stat {
+        font-size: 1.3rem;
+      }
+
+      .win-stat-label {
+        color: var(--color-gray);
+      }
+
+      .win-stat-value {
+        color: var(--color-gold);
+        font-weight: bold;
+        margin-left: 10px;
+      }
+
+      .items-collected {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+        max-width: 400px;
+      }
+
+      .collected-item {
+        width: 40px;
+        height: 40px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 5px;
+      }
+
+      .restart-btn {
+        padding: 15px 40px;
+        font-size: 1.5rem;
+        font-family: "Courier New", monospace;
+        background: var(--color-gold);
+        color: var(--color-bg-dark);
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+      }
+
+      .restart-btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 25px rgba(255, 215, 0, 0.5);
+      }
+
+      .restart-btn:active {
+        transform: scale(0.98);
+      }
+
+      .donate-btn {
+        padding: 12px 30px;
+        font-size: 1rem;
+        font-family: "Courier New", monospace;
+        background: var(--color-green);
+        color: var(--color-white);
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        letter-spacing: 1px;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+      }
+
+      .donate-btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 25px rgba(76, 175, 80, 0.5);
+        background: #66bb6a;
+      }
+
+      .donate-btn:active {
+        transform: scale(0.98);
+      }
+
+      .donate-emoji {
+        margin-right: 8px;
+      }
+
+      /* ============================================
+           INSTRUCTIONS
+           ============================================ */
+      .instructions {
+        font-size: 0.9rem;
+        color: var(--color-gray);
+        text-align: center;
+      }
+
+      .key-hint {
+        display: inline-block;
+        padding: 2px 8px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 4px;
+        border: 1px solid var(--color-gray);
+        margin: 0 2px;
+      }
+
+      /* ============================================
+           INVENTORY BAR
+           ============================================ */
+      .inventory-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        margin-top: 10px;
+      }
+
+      .inventory-label {
+        font-size: 1rem;
+        color: var(--color-gold);
+        text-transform: uppercase;
+        letter-spacing: 2px;
+      }
+
+      .inventory-bar {
+        display: flex;
+        gap: 8px;
+        padding: 12px 20px;
+        background: rgba(0, 0, 0, 0.6);
+        border: 2px solid var(--color-gold);
+        border-radius: 8px;
+        min-width: 400px;
+        min-height: 60px;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .inventory-slot {
+        width: 40px;
+        height: 40px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 215, 0, 0.3);
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+      }
+
+      .inventory-slot svg {
+        width: 30px;
+        height: 30px;
+      }
+
+      .inventory-slot.golden-hoe {
+        border-color: var(--color-gold);
+        box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        animation: shimmer 1s ease-in-out infinite;
+      }
+
+      .inventory-empty-text {
+        color: var(--color-gray);
+        font-style: italic;
+        font-size: 0.9rem;
+      }
+
+      /* ============================================
+           ITEM FOUND OVERLAY
+           ============================================ */
+      .item-found-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.75);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 30px;
+        z-index: 150;
+      }
+
+      .item-found-overlay.active {
+        display: flex;
+        animation: fadeIn 0.3s ease;
+      }
+
+      .item-found-title {
+        font-size: 2.5rem;
+        color: var(--color-gold);
+        text-transform: uppercase;
+        letter-spacing: 4px;
+        text-shadow:
+          0 0 10px var(--color-gold),
+          0 0 20px var(--color-gold);
+        animation: pulseText 0.5s ease-in-out infinite alternate;
+      }
+
+      .item-found-name {
+        font-size: 1.5rem;
+        color: var(--color-white);
+        text-transform: capitalize;
+      }
+
+      .item-found-display {
+        width: 140px;
+        height: 140px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+      }
+
+      .item-found-display svg {
+        width: 120px;
+        height: 120px;
+        filter: drop-shadow(0 0 15px var(--color-gold))
+          drop-shadow(0 0 30px var(--color-gold));
+        animation: itemGlow 1s ease-in-out infinite alternate;
+      }
+
+      @keyframes itemGlow {
+        0% {
+          filter: drop-shadow(0 0 15px var(--color-gold))
+            drop-shadow(0 0 30px var(--color-gold));
+          transform: scale(1);
+        }
+
+        100% {
+          filter: drop-shadow(0 0 25px var(--color-gold-light))
+            drop-shadow(0 0 50px var(--color-gold));
+          transform: scale(1.05);
+        }
+      }
+
+      /* Flying item animation - animated via JavaScript */
+      .flying-item {
+        position: fixed;
+        z-index: 200;
+        pointer-events: none;
+        transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      }
+
+      .flying-item svg {
+        width: 100%;
+        height: 100%;
+        filter: drop-shadow(0 0 10px var(--color-gold));
+      }
+
+      /* ============================================
+           MOBILE D-PAD CONTROLS
+           ============================================ */
+      .dpad-container {
+        display: none;
+        /* Hidden by default, shown on touch devices */
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 50;
+      }
+
+      .dpad {
+        display: grid;
+        grid-template-columns: 60px 60px 60px;
+        grid-template-rows: 60px 60px 60px;
+        gap: 4px;
+      }
+
+      .dpad-btn {
+        width: 60px;
+        height: 60px;
+        background: rgba(0, 0, 0, 0.7);
+        border: 2px solid var(--color-gold);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: var(--color-gold);
+        cursor: pointer;
+        transition: all 0.1s ease;
+        user-select: none;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      .dpad-btn:active {
+        background: rgba(255, 215, 0, 0.3);
+        transform: scale(0.95);
+      }
+
+      .dpad-btn.dig-btn {
+        background: rgba(76, 175, 80, 0.7);
+        border-color: var(--color-green);
+        color: var(--color-white);
+        font-size: 1.2rem;
+      }
+
+      .dpad-btn.dig-btn:active {
+        background: rgba(76, 175, 80, 0.9);
+      }
+
+      .dpad-empty {
+        /* Empty grid cells for d-pad layout */
+        visibility: hidden;
+      }
+
+      /* Show d-pad on touch devices */
+      @media (pointer: coarse) {
+        .dpad-container {
+          display: block;
+        }
+
+        .instructions {
+          display: none;
+        }
+      }
+
+      /* Also show d-pad on small screens (for mobile view testing) */
+      @media (max-width: 650px) {
+        .dpad-container {
+          display: block;
+        }
+
+        .instructions {
+          display: none;
+        }
+      }
+
+      /* ============================================
+           RESPONSIVE - MOBILE SCREENS
+           ============================================ */
+      @media (max-width: 650px) {
+        :root {
+          --cell-size: 42px;
+          --sprite-size: 28px;
+          --item-size: 22px;
+        }
+
+        .game-title {
+          font-size: 1.5rem;
+          letter-spacing: 2px;
         }
 
         .game-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
-            padding: 20px;
+          padding: 10px;
+          gap: 12px;
         }
 
-        /* ============================================
-           HEADER & TITLE
-           ============================================ */
-        .game-title {
-            font-size: 2.5rem;
-            text-transform: uppercase;
-            letter-spacing: 4px;
-            text-shadow:
-                0 0 10px var(--color-gold),
-                0 0 20px var(--color-gold),
-                0 0 30px var(--color-gold);
-            animation: titleGlow 2s ease-in-out infinite alternate;
-        }
-
-        @keyframes titleGlow {
-            from {
-                text-shadow: 0 0 10px var(--color-gold), 0 0 20px var(--color-gold);
-            }
-
-            to {
-                text-shadow: 0 0 20px var(--color-gold-light), 0 0 40px var(--color-gold);
-            }
-        }
-
-        /* ============================================
-           GAME GRID
-           ============================================ */
         .game-grid {
-            display: grid;
-            grid-template-columns: repeat(var(--grid-size), var(--cell-size));
-            grid-template-rows: repeat(var(--grid-size), var(--cell-size));
-            gap: 2px;
-            padding: 10px;
-            background: #3e2723;
-            border: 4px solid var(--color-gold);
-            border-radius: 8px;
-            box-shadow:
-                0 0 20px rgba(255, 215, 0, 0.3),
-                inset 0 0 30px rgba(0, 0, 0, 0.5);
-        }
-
-        .grid-cell {
-            width: var(--cell-size);
-            height: var(--cell-size);
-            position: relative;
-            cursor: pointer;
-            transition: transform 0.1s ease;
-            image-rendering: pixelated;
-        }
-
-        .grid-cell:hover {
-            transform: scale(1.02);
-            z-index: 1;
-        }
-
-        /* Undugged dirt texture */
-        .grid-cell.undug {
-            background:
-                linear-gradient(45deg, var(--color-dirt-dark) 25%, transparent 25%),
-                linear-gradient(-45deg, var(--color-dirt-dark) 25%, transparent 25%),
-                linear-gradient(45deg, transparent 75%, var(--color-dirt-light) 75%),
-                linear-gradient(-45deg, transparent 75%, var(--color-dirt-light) 75%);
-            background-size: 10px 10px;
-            background-color: var(--color-dirt-dark);
-            border: 2px solid #4e342e;
-        }
-
-        /* Dug cell appearance */
-        .grid-cell.dug {
-            background: var(--color-dirt-dug);
-            border: 2px solid #8d6e63;
-            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
-        }
-
-        /* ============================================
-           GREG THE SPIDER SPRITE
-           ============================================ */
-        .greg-sprite {
-            position: absolute;
-            width: var(--sprite-size);
-            height: var(--sprite-size);
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 10;
-            transition: all 0.15s ease;
-            image-rendering: pixelated;
-        }
-
-        /* Dancing animation for celebration */
-        .greg-sprite.dancing {
-            animation: gregDance var(--dance-duration) ease-in-out infinite alternate;
-        }
-
-        @keyframes gregDance {
-            0% {
-                transform: translate(-50%, -50%) rotate(-15deg) scale(1.1);
-            }
-
-            100% {
-                transform: translate(-50%, -50%) rotate(15deg) scale(1.1);
-            }
-        }
-
-        /* ============================================
-           ITEM SPRITES
-           ============================================ */
-        .item-sprite {
-            position: absolute;
-            width: var(--item-size);
-            height: var(--item-size);
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 5;
-            image-rendering: pixelated;
-        }
-
-        /* Golden hoe special shimmer effect */
-        .item-sprite.golden-hoe {
-            animation: shimmer 1s ease-in-out infinite;
-            filter: drop-shadow(0 0 5px var(--color-gold));
-        }
-
-        @keyframes shimmer {
-
-            0%,
-            100% {
-                filter: drop-shadow(0 0 5px var(--color-gold)) brightness(1);
-            }
-
-            50% {
-                filter: drop-shadow(0 0 15px var(--color-gold-light)) brightness(1.3);
-            }
-        }
-
-        /* ============================================
-           DIG ANIMATION
-           ============================================ */
-        .dig-effect {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            pointer-events: none;
-            z-index: 15;
-        }
-
-        .dig-particle {
-            position: absolute;
-            width: 6px;
-            height: 6px;
-            background: var(--color-dirt-dark);
-            border-radius: 50%;
-            animation: particleFly 0.5s ease-out forwards;
-        }
-
-        @keyframes particleFly {
-            0% {
-                transform: translate(0, 0) scale(1);
-                opacity: 1;
-            }
-
-            100% {
-                transform: translate(var(--tx), var(--ty)) scale(0);
-                opacity: 0;
-            }
-        }
-
-        /* ============================================
-           CELEBRATION OVERLAY
-           ============================================ */
-        .celebration-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            gap: 20px;
-            z-index: 100;
-        }
-
-        .celebration-overlay.active {
-            display: flex;
-            animation: fadeIn 0.3s ease;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-
-            to {
-                opacity: 1;
-            }
-        }
-
-        .celebration-text {
-            font-size: 3rem;
-            color: var(--color-gold);
-            text-shadow:
-                0 0 20px var(--color-gold),
-                0 0 40px var(--color-gold),
-                0 0 60px var(--color-gold);
-            animation: pulseText 0.5s ease-in-out infinite alternate;
-        }
-
-        @keyframes pulseText {
-            from {
-                transform: scale(1);
-            }
-
-            to {
-                transform: scale(1.1);
-            }
-        }
-
-        .celebration-timer {
-            font-size: 1.5rem;
-            color: var(--color-white);
-        }
-
-        /* Confetti particles */
-        .confetti {
-            position: fixed;
-            width: 10px;
-            height: 10px;
-            z-index: 99;
-            animation: confettiFall 3s linear forwards;
-        }
-
-        @keyframes confettiFall {
-            0% {
-                transform: translateY(-100vh) rotate(0deg);
-                opacity: 1;
-            }
-
-            100% {
-                transform: translateY(100vh) rotate(720deg);
-                opacity: 0;
-            }
-        }
-
-        /* ============================================
-           WIN SCREEN
-           ============================================ */
-        .win-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, var(--color-bg-dark) 0%, var(--color-bg-medium) 100%);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            gap: 30px;
-            z-index: 200;
-        }
-
-        .win-screen.active {
-            display: flex;
-            animation: fadeIn 0.5s ease;
-        }
-
-        .win-title {
-            font-size: 4rem;
-            color: var(--color-gold);
-            text-shadow:
-                0 0 20px var(--color-gold),
-                0 0 40px var(--color-gold);
-            animation: titleGlow 2s ease-in-out infinite alternate;
-        }
-
-        .win-stats {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            padding: 30px;
-            background: rgba(0, 0, 0, 0.5);
-            border: 2px solid var(--color-gold);
-            border-radius: 12px;
-            text-align: center;
-        }
-
-        .win-stat {
-            font-size: 1.3rem;
-        }
-
-        .win-stat-label {
-            color: var(--color-gray);
-        }
-
-        .win-stat-value {
-            color: var(--color-gold);
-            font-weight: bold;
-            margin-left: 10px;
-        }
-
-        .items-collected {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            justify-content: center;
-            max-width: 400px;
-        }
-
-        .collected-item {
-            width: 40px;
-            height: 40px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 5px;
-        }
-
-        .restart-btn {
-            padding: 15px 40px;
-            font-size: 1.5rem;
-            font-family: 'Courier New', monospace;
-            background: var(--color-gold);
-            color: var(--color-bg-dark);
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
-        }
-
-        .restart-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 6px 25px rgba(255, 215, 0, 0.5);
-        }
-
-        .restart-btn:active {
-            transform: scale(0.98);
-        }
-
-        .donate-btn {
-            padding: 12px 30px;
-            font-size: 1rem;
-            font-family: 'Courier New', monospace;
-            background: var(--color-green);
-            color: var(--color-white);
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-            letter-spacing: 1px;
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
-        }
-
-        .donate-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 6px 25px rgba(76, 175, 80, 0.5);
-            background: #66bb6a;
-        }
-
-        .donate-btn:active {
-            transform: scale(0.98);
-        }
-
-        .donate-emoji {
-            margin-right: 8px;
-        }
-
-        /* ============================================
-           INSTRUCTIONS
-           ============================================ */
-        .instructions {
-            font-size: 0.9rem;
-            color: var(--color-gray);
-            text-align: center;
-        }
-
-        .key-hint {
-            display: inline-block;
-            padding: 2px 8px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 4px;
-            border: 1px solid var(--color-gray);
-            margin: 0 2px;
-        }
-
-        /* ============================================
-           INVENTORY BAR
-           ============================================ */
-        .inventory-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-            margin-top: 10px;
-        }
-
-        .inventory-label {
-            font-size: 1rem;
-            color: var(--color-gold);
-            text-transform: uppercase;
-            letter-spacing: 2px;
+          padding: 6px;
+          border-width: 3px;
         }
 
         .inventory-bar {
-            display: flex;
-            gap: 8px;
-            padding: 12px 20px;
-            background: rgba(0, 0, 0, 0.6);
-            border: 2px solid var(--color-gold);
-            border-radius: 8px;
-            min-width: 400px;
-            min-height: 60px;
-            flex-wrap: wrap;
-            justify-content: center;
-            align-items: center;
+          min-width: auto;
+          width: 100%;
+          max-width: 360px;
+          padding: 8px 12px;
         }
 
         .inventory-slot {
-            width: 40px;
-            height: 40px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 215, 0, 0.3);
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
+          width: 32px;
+          height: 32px;
         }
 
         .inventory-slot svg {
-            width: 30px;
-            height: 30px;
+          width: 24px;
+          height: 24px;
         }
 
-        .inventory-slot.golden-hoe {
-            border-color: var(--color-gold);
-            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
-            animation: shimmer 1s ease-in-out infinite;
+        .inventory-label {
+          font-size: 0.85rem;
         }
 
-        .inventory-empty-text {
-            color: var(--color-gray);
-            font-style: italic;
-            font-size: 0.9rem;
+        .celebration-text {
+          font-size: 1.8rem;
         }
 
-        /* ============================================
-           ITEM FOUND OVERLAY
-           ============================================ */
-        .item-found-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.75);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            gap: 30px;
-            z-index: 150;
+        .win-title {
+          font-size: 2.5rem;
         }
 
-        .item-found-overlay.active {
-            display: flex;
-            animation: fadeIn 0.3s ease;
+        .win-stats {
+          padding: 20px;
+        }
+
+        .win-stat {
+          font-size: 1rem;
+        }
+
+        .restart-btn {
+          padding: 12px 30px;
+          font-size: 1.2rem;
+        }
+
+        .donate-btn {
+          padding: 10px 20px;
+          font-size: 0.85rem;
+          text-align: center;
         }
 
         .item-found-title {
-            font-size: 2.5rem;
-            color: var(--color-gold);
-            text-transform: uppercase;
-            letter-spacing: 4px;
-            text-shadow:
-                0 0 10px var(--color-gold),
-                0 0 20px var(--color-gold);
-            animation: pulseText 0.5s ease-in-out infinite alternate;
-        }
-
-        .item-found-name {
-            font-size: 1.5rem;
-            color: var(--color-white);
-            text-transform: capitalize;
+          font-size: 1.8rem;
         }
 
         .item-found-display {
-            width: 140px;
-            height: 140px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
+          width: 100px;
+          height: 100px;
         }
 
         .item-found-display svg {
-            width: 120px;
-            height: 120px;
-            filter: drop-shadow(0 0 15px var(--color-gold)) drop-shadow(0 0 30px var(--color-gold));
-            animation: itemGlow 1s ease-in-out infinite alternate;
+          width: 80px;
+          height: 80px;
         }
 
-        @keyframes itemGlow {
-            0% {
-                filter: drop-shadow(0 0 15px var(--color-gold)) drop-shadow(0 0 30px var(--color-gold));
-                transform: scale(1);
-            }
-
-            100% {
-                filter: drop-shadow(0 0 25px var(--color-gold-light)) drop-shadow(0 0 50px var(--color-gold));
-                transform: scale(1.05);
-            }
-        }
-
-        /* Flying item animation - animated via JavaScript */
-        .flying-item {
-            position: fixed;
-            z-index: 200;
-            pointer-events: none;
-            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        }
-
-        .flying-item svg {
-            width: 100%;
-            height: 100%;
-            filter: drop-shadow(0 0 10px var(--color-gold));
-        }
-
-        /* ============================================
-           MOBILE D-PAD CONTROLS
-           ============================================ */
-        .dpad-container {
-            display: none;
-            /* Hidden by default, shown on touch devices */
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 50;
-        }
-
-        .dpad {
-            display: grid;
-            grid-template-columns: 60px 60px 60px;
-            grid-template-rows: 60px 60px 60px;
-            gap: 4px;
+        .item-found-name {
+          font-size: 1.2rem;
         }
 
         .dpad-btn {
-            width: 60px;
-            height: 60px;
-            background: rgba(0, 0, 0, 0.7);
-            border: 2px solid var(--color-gold);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            color: var(--color-gold);
-            cursor: pointer;
-            transition: all 0.1s ease;
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
+          width: 50px;
+          height: 50px;
+          font-size: 1.2rem;
         }
 
-        .dpad-btn:active {
-            background: rgba(255, 215, 0, 0.3);
-            transform: scale(0.95);
+        .dpad {
+          grid-template-columns: 50px 50px 50px;
+          grid-template-rows: 50px 50px 50px;
         }
 
-        .dpad-btn.dig-btn {
-            background: rgba(76, 175, 80, 0.7);
-            border-color: var(--color-green);
-            color: var(--color-white);
-            font-size: 1.2rem;
+        /* Mobile layout: no scrolling, all content fits in viewport */
+        body {
+          height: 100vh;
+          height: 100dvh;
+          /* Dynamic viewport height for mobile browsers */
+          overflow: hidden;
+          justify-content: flex-start;
+          padding-top: 10px;
         }
 
-        .dpad-btn.dig-btn:active {
-            background: rgba(76, 175, 80, 0.9);
+        .game-container {
+          flex: 1;
+          justify-content: flex-start;
+          min-height: 0;
+          /* Allow flex shrinking */
+          padding-bottom: 180px;
+          /* Room for fixed d-pad */
         }
 
-        .dpad-empty {
-            /* Empty grid cells for d-pad layout */
-            visibility: hidden;
+        /* D-pad: always fixed at bottom on mobile */
+        .dpad-container {
+          position: fixed;
+          bottom: 10px;
+          left: 50%;
+          transform: translateX(-50%);
+        }
+      }
+
+      /* Extra small screens */
+      @media (max-width: 400px) {
+        :root {
+          --cell-size: 36px;
+          --sprite-size: 24px;
+          --item-size: 18px;
         }
 
-        /* Show d-pad on touch devices */
-        @media (pointer: coarse) {
-            .dpad-container {
-                display: block;
-            }
-
-            .instructions {
-                display: none;
-            }
+        .game-title {
+          font-size: 1.2rem;
         }
 
-        /* Also show d-pad on small screens (for mobile view testing) */
-        @media (max-width: 650px) {
-            .dpad-container {
-                display: block;
-            }
-
-            .instructions {
-                display: none;
-            }
+        .inventory-slot {
+          width: 28px;
+          height: 28px;
         }
 
-        /* ============================================
-           RESPONSIVE - MOBILE SCREENS
-           ============================================ */
-        @media (max-width: 650px) {
-            :root {
-                --cell-size: 42px;
-                --sprite-size: 28px;
-                --item-size: 22px;
-            }
-
-            .game-title {
-                font-size: 1.5rem;
-                letter-spacing: 2px;
-            }
-
-            .game-container {
-                padding: 10px;
-                gap: 12px;
-            }
-
-            .game-grid {
-                padding: 6px;
-                border-width: 3px;
-            }
-
-            .inventory-bar {
-                min-width: auto;
-                width: 100%;
-                max-width: 360px;
-                padding: 8px 12px;
-            }
-
-            .inventory-slot {
-                width: 32px;
-                height: 32px;
-            }
-
-            .inventory-slot svg {
-                width: 24px;
-                height: 24px;
-            }
-
-            .inventory-label {
-                font-size: 0.85rem;
-            }
-
-            .celebration-text {
-                font-size: 1.8rem;
-            }
-
-            .win-title {
-                font-size: 2.5rem;
-            }
-
-            .win-stats {
-                padding: 20px;
-            }
-
-            .win-stat {
-                font-size: 1rem;
-            }
-
-            .restart-btn {
-                padding: 12px 30px;
-                font-size: 1.2rem;
-            }
-
-            .donate-btn {
-                padding: 10px 20px;
-                font-size: 0.85rem;
-                text-align: center;
-            }
-
-            .item-found-title {
-                font-size: 1.8rem;
-            }
-
-            .item-found-display {
-                width: 100px;
-                height: 100px;
-            }
-
-            .item-found-display svg {
-                width: 80px;
-                height: 80px;
-            }
-
-            .item-found-name {
-                font-size: 1.2rem;
-            }
-
-            .dpad-btn {
-                width: 50px;
-                height: 50px;
-                font-size: 1.2rem;
-            }
-
-            .dpad {
-                grid-template-columns: 50px 50px 50px;
-                grid-template-rows: 50px 50px 50px;
-            }
-
-            /* Mobile layout: no scrolling, all content fits in viewport */
-            body {
-                height: 100vh;
-                height: 100dvh;
-                /* Dynamic viewport height for mobile browsers */
-                overflow: hidden;
-                justify-content: flex-start;
-                padding-top: 10px;
-            }
-
-            .game-container {
-                flex: 1;
-                justify-content: flex-start;
-                min-height: 0;
-                /* Allow flex shrinking */
-                padding-bottom: 180px;
-                /* Room for fixed d-pad */
-            }
-
-            /* D-pad: always fixed at bottom on mobile */
-            .dpad-container {
-                position: fixed;
-                bottom: 10px;
-                left: 50%;
-                transform: translateX(-50%);
-            }
+        .inventory-slot svg {
+          width: 20px;
+          height: 20px;
         }
 
-        /* Extra small screens */
-        @media (max-width: 400px) {
-            :root {
-                --cell-size: 36px;
-                --sprite-size: 24px;
-                --item-size: 18px;
-            }
-
-            .game-title {
-                font-size: 1.2rem;
-            }
-
-            .inventory-slot {
-                width: 28px;
-                height: 28px;
-            }
-
-            .inventory-slot svg {
-                width: 20px;
-                height: 20px;
-            }
-
-            .dpad-btn {
-                width: 45px;
-                height: 45px;
-                font-size: 1rem;
-            }
-
-            .dpad {
-                grid-template-columns: 45px 45px 45px;
-                grid-template-rows: 45px 45px 45px;
-            }
+        .dpad-btn {
+          width: 45px;
+          height: 45px;
+          font-size: 1rem;
         }
+
+        .dpad {
+          grid-template-columns: 45px 45px 45px;
+          grid-template-rows: 45px 45px 45px;
+        }
+      }
     </style>
-</head>
+  </head>
 
-<body>
+  <body>
     <!-- Main Game Container -->
     <div class="game-container">
-        <h1 class="game-title">Greg's Golden Hoe</h1>
+      <h1 class="game-title">Greg's Golden Hoe</h1>
 
-        <!-- Inventory (above grid) -->
-        <div class="inventory-container">
-            <span class="inventory-label">Inventory</span>
-            <div class="inventory-bar" id="inventoryBar">
-                <span class="inventory-empty-text">Dig to find items!</span>
-            </div>
+      <!-- Inventory (above grid) -->
+      <div class="inventory-container">
+        <span class="inventory-label">Inventory</span>
+        <div class="inventory-bar" id="inventoryBar">
+          <span class="inventory-empty-text">Dig to find items!</span>
         </div>
+      </div>
 
-        <!-- Game Grid -->
-        <div class="game-grid" id="gameGrid"></div>
+      <!-- Game Grid -->
+      <div class="game-grid" id="gameGrid"></div>
 
-        <!-- Instructions (hidden on touch devices) -->
-        <div class="instructions">
-            <span class="key-hint">↑</span>
-            <span class="key-hint">↓</span>
-            <span class="key-hint">←</span>
-            <span class="key-hint">→</span>
-            Move Greg &nbsp;|&nbsp;
-            <span class="key-hint">Click</span> to Dig
-        </div>
+      <!-- Instructions (hidden on touch devices) -->
+      <div class="instructions">
+        <span class="key-hint">↑</span>
+        <span class="key-hint">↓</span>
+        <span class="key-hint">←</span>
+        <span class="key-hint">→</span>
+        Move Greg &nbsp;|&nbsp;
+        <span class="key-hint">Spacebar</span> or
+        <span class="key-hint">Click</span> to Dig
+      </div>
     </div>
 
     <!-- Mobile D-Pad Controls -->
     <div class="dpad-container" id="dpadContainer">
-        <div class="dpad">
-            <div class="dpad-empty"></div>
-            <button class="dpad-btn" id="dpadUp">↑</button>
-            <div class="dpad-empty"></div>
-            <button class="dpad-btn" id="dpadLeft">←</button>
-            <button class="dpad-btn dig-btn" id="dpadDig">DIG</button>
-            <button class="dpad-btn" id="dpadRight">→</button>
-            <div class="dpad-empty"></div>
-            <button class="dpad-btn" id="dpadDown">↓</button>
-            <div class="dpad-empty"></div>
-        </div>
+      <div class="dpad">
+        <div class="dpad-empty"></div>
+        <button class="dpad-btn" id="dpadUp">↑</button>
+        <div class="dpad-empty"></div>
+        <button class="dpad-btn" id="dpadLeft">←</button>
+        <button class="dpad-btn dig-btn" id="dpadDig">DIG</button>
+        <button class="dpad-btn" id="dpadRight">→</button>
+        <div class="dpad-empty"></div>
+        <button class="dpad-btn" id="dpadDown">↓</button>
+        <div class="dpad-empty"></div>
+      </div>
     </div>
 
     <!-- Item Found Overlay -->
     <div class="item-found-overlay" id="itemFoundOverlay">
-        <div class="item-found-title">✨ Item Found! ✨</div>
-        <div class="item-found-display" id="itemFoundDisplay"></div>
-        <div class="item-found-name" id="itemFoundName"></div>
+      <div class="item-found-title">✨ Item Found! ✨</div>
+      <div class="item-found-display" id="itemFoundDisplay"></div>
+      <div class="item-found-name" id="itemFoundName"></div>
     </div>
 
     <!-- Celebration Overlay -->
     <div class="celebration-overlay" id="celebrationOverlay">
-        <div class="celebration-text">🏆 GOLDEN HOE FOUND! 🏆</div>
-        <div class="celebration-timer" id="celebrationTimer">Dancing for 15 seconds...</div>
+      <div class="celebration-text">🏆 GOLDEN HOE FOUND! 🏆</div>
+      <div class="celebration-timer" id="celebrationTimer">
+        Dancing for 15 seconds...
+      </div>
     </div>
 
     <!-- Win Screen -->
     <div class="win-screen" id="winScreen">
-        <h2 class="win-title">🎉 VICTORY! 🎉</h2>
-        <div class="win-stats">
-            <div class="win-stat">
-                <span class="win-stat-label">Total Digs:</span>
-                <span class="win-stat-value" id="finalDigs">0</span>
-            </div>
-            <div class="win-stat">
-                <span class="win-stat-label">Items Collected:</span>
-                <span class="win-stat-value" id="finalItems">0</span>
-            </div>
-            <div class="win-stat">
-                <span class="win-stat-label">Items Found:</span>
-            </div>
-            <div class="items-collected" id="itemsCollected"></div>
+      <h2 class="win-title">🎉 VICTORY! 🎉</h2>
+      <div class="win-stats">
+        <div class="win-stat">
+          <span class="win-stat-label">Total Digs:</span>
+          <span class="win-stat-value" id="finalDigs">0</span>
         </div>
-        <button class="restart-btn" id="restartBtn">Play Again</button>
-        <a href="https://secure.qgiv.com/event/p2ppollevent2024/account/1776902/" target="_blank" class="donate-btn">
-            <span class="donate-emoji">🐛</span>Donate to Entomology and Bug Conservation Works
-        </a>
+        <div class="win-stat">
+          <span class="win-stat-label">Items Collected:</span>
+          <span class="win-stat-value" id="finalItems">0</span>
+        </div>
+        <div class="win-stat">
+          <span class="win-stat-label">Items Found:</span>
+        </div>
+        <div class="items-collected" id="itemsCollected"></div>
+      </div>
+      <button class="restart-btn" id="restartBtn">Play Again</button>
+      <a
+        href="https://secure.qgiv.com/event/p2ppollevent2024/account/1776902/"
+        target="_blank"
+        class="donate-btn"
+      >
+        <span class="donate-emoji">🐛</span>Donate to Entomology and Bug
+        Conservation Works
+      </a>
     </div>
 
     <script>
-        /* ============================================
+      /* ============================================
            GREG'S GOLDEN HOE - GAME ENGINE
            ============================================
            
@@ -980,81 +1012,81 @@
            
            ============================================ */
 
-        // ============================================
-        // CONSTANTS - No magic numbers!
-        // ============================================
+      // ============================================
+      // CONSTANTS - No magic numbers!
+      // ============================================
 
-        const GRID_SIZE = 8;                    // 8x8 grid
-        const GOLDEN_HOE_CHANCE = 0.10;         // 10% chance per dig (1/10)
-        const CELEBRATION_DURATION = 15000;      // 15 seconds in milliseconds
-        const MOVE_COOLDOWN = 100;              // Prevent movement spam (ms)
-        const ITEM_DISPLAY_DURATION = 3000;     // 3 seconds for item found overlay
-        const ITEM_FLY_DURATION = 800;          // 0.8 seconds for fly animation
+      const GRID_SIZE = 8; // 8x8 grid
+      const GOLDEN_HOE_CHANCE = 0.1; // 10% chance per dig (1/10)
+      const CELEBRATION_DURATION = 15000; // 15 seconds in milliseconds
+      const MOVE_COOLDOWN = 100; // Prevent movement spam (ms)
+      const ITEM_DISPLAY_DURATION = 3000; // 3 seconds for item found overlay
+      const ITEM_FLY_DURATION = 800; // 0.8 seconds for fly animation
 
-        // Game state enum values
-        const GAME_STATES = {
-            PLAYING: 'playing',
-            SHOWING_ITEM: 'showing_item',       // New state for item display
-            CELEBRATING: 'celebrating',
-            WON: 'won'
-        };
+      // Game state enum values
+      const GAME_STATES = {
+        PLAYING: "playing",
+        SHOWING_ITEM: "showing_item", // New state for item display
+        CELEBRATING: "celebrating",
+        WON: "won",
+      };
 
-        // Item types for the grid
-        const ITEM_TYPES = {
-            EMPTY: 'empty',
-            RAKE: 'rake',
-            SHOVEL: 'shovel',
-            PITCHFORK: 'pitchfork',
-            CHISEL: 'chisel',
-            FISHING_ROD: 'fishing_rod',
-            CARROT: 'carrot',
-            POTATO: 'potato',
-            TOMATO: 'tomato',
-            LETTUCE: 'lettuce',
-            ONION: 'onion',
-            GOLDEN_HOE: 'golden_hoe'
-        };
+      // Item types for the grid
+      const ITEM_TYPES = {
+        EMPTY: "empty",
+        RAKE: "rake",
+        SHOVEL: "shovel",
+        PITCHFORK: "pitchfork",
+        CHISEL: "chisel",
+        FISHING_ROD: "fishing_rod",
+        CARROT: "carrot",
+        POTATO: "potato",
+        TOMATO: "tomato",
+        LETTUCE: "lettuce",
+        ONION: "onion",
+        GOLDEN_HOE: "golden_hoe",
+      };
 
-        // Items to pre-place on the grid (excluding golden hoe)
-        const PREPLACED_ITEMS = [
-            ITEM_TYPES.RAKE,
-            ITEM_TYPES.SHOVEL,
-            ITEM_TYPES.PITCHFORK,
-            ITEM_TYPES.CHISEL,
-            ITEM_TYPES.FISHING_ROD,
-            ITEM_TYPES.CARROT,
-            ITEM_TYPES.POTATO,
-            ITEM_TYPES.TOMATO,
-            ITEM_TYPES.LETTUCE,
-            ITEM_TYPES.ONION
-        ];
+      // Items to pre-place on the grid (excluding golden hoe)
+      const PREPLACED_ITEMS = [
+        ITEM_TYPES.RAKE,
+        ITEM_TYPES.SHOVEL,
+        ITEM_TYPES.PITCHFORK,
+        ITEM_TYPES.CHISEL,
+        ITEM_TYPES.FISHING_ROD,
+        ITEM_TYPES.CARROT,
+        ITEM_TYPES.POTATO,
+        ITEM_TYPES.TOMATO,
+        ITEM_TYPES.LETTUCE,
+        ITEM_TYPES.ONION,
+      ];
 
-        // Human-readable item names for display
-        const ITEM_NAMES = {
-            [ITEM_TYPES.RAKE]: 'Rake',
-            [ITEM_TYPES.SHOVEL]: 'Shovel',
-            [ITEM_TYPES.PITCHFORK]: 'Pitchfork',
-            [ITEM_TYPES.CHISEL]: 'Chisel',
-            [ITEM_TYPES.FISHING_ROD]: 'Broken Fishing Rod',
-            [ITEM_TYPES.CARROT]: 'Carrot',
-            [ITEM_TYPES.POTATO]: 'Potato',
-            [ITEM_TYPES.TOMATO]: 'Tomato',
-            [ITEM_TYPES.LETTUCE]: 'Lettuce',
-            [ITEM_TYPES.ONION]: 'Onion',
-            [ITEM_TYPES.GOLDEN_HOE]: 'Golden Hoe'
-        };
+      // Human-readable item names for display
+      const ITEM_NAMES = {
+        [ITEM_TYPES.RAKE]: "Rake",
+        [ITEM_TYPES.SHOVEL]: "Shovel",
+        [ITEM_TYPES.PITCHFORK]: "Pitchfork",
+        [ITEM_TYPES.CHISEL]: "Chisel",
+        [ITEM_TYPES.FISHING_ROD]: "Broken Fishing Rod",
+        [ITEM_TYPES.CARROT]: "Carrot",
+        [ITEM_TYPES.POTATO]: "Potato",
+        [ITEM_TYPES.TOMATO]: "Tomato",
+        [ITEM_TYPES.LETTUCE]: "Lettuce",
+        [ITEM_TYPES.ONION]: "Onion",
+        [ITEM_TYPES.GOLDEN_HOE]: "Golden Hoe",
+      };
 
-        // ============================================
-        // SVG SPRITE DEFINITIONS
-        // ============================================
+      // ============================================
+      // SVG SPRITE DEFINITIONS
+      // ============================================
 
-        /**
-         * Generate pixel-art SVG sprites for the game
-         * Each sprite is designed in a retro 8-bit style
-         */
-        const SPRITES = {
-            // Greg the friendly brown recluse spider
-            greg: `<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+      /**
+       * Generate pixel-art SVG sprites for the game
+       * Each sprite is designed in a retro 8-bit style
+       */
+      const SPRITES = {
+        // Greg the friendly brown recluse spider
+        greg: `<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
             <!-- Body -->
             <ellipse cx="8" cy="9" rx="5" ry="4" fill="#5d4037"/>
             <ellipse cx="8" cy="6" rx="3" ry="2.5" fill="#6d4c41"/>
@@ -1076,8 +1108,8 @@
             <line x1="11" y1="12" x2="13" y2="15" stroke="#4e342e" stroke-width="1"/>
         </svg>`,
 
-            // Rake
-            rake: `<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+        // Rake
+        rake: `<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
             <rect x="7" y="2" width="2" height="12" fill="#8d6e63"/>
             <rect x="3" y="1" width="10" height="2" fill="#616161"/>
             <rect x="3" y="3" width="1" height="2" fill="#616161"/>
@@ -1086,15 +1118,15 @@
             <rect x="12" y="3" width="1" height="2" fill="#616161"/>
         </svg>`,
 
-            // Shovel
-            shovel: `<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+        // Shovel
+        shovel: `<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
             <rect x="7" y="1" width="2" height="9" fill="#8d6e63"/>
             <ellipse cx="8" cy="13" rx="4" ry="3" fill="#78909c"/>
             <ellipse cx="8" cy="12" rx="3" ry="2" fill="#90a4ae"/>
         </svg>`,
 
-            // Pitchfork
-            pitchfork: `<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+        // Pitchfork
+        pitchfork: `<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
             <rect x="7" y="4" width="2" height="11" fill="#8d6e63"/>
             <rect x="4" y="1" width="1" height="5" fill="#616161"/>
             <rect x="7.5" y="1" width="1" height="4" fill="#616161"/>
@@ -1102,15 +1134,15 @@
             <rect x="4" y="4" width="8" height="1.5" fill="#616161"/>
         </svg>`,
 
-            // Chisel
-            chisel: `<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+        // Chisel
+        chisel: `<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
             <rect x="6" y="1" width="4" height="8" fill="#5d4037"/>
             <polygon points="6,9 10,9 8,15" fill="#b0bec5"/>
             <rect x="5" y="1" width="6" height="2" fill="#6d4c41"/>
         </svg>`,
 
-            // Broken fishing rod
-            fishing_rod: `<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+        // Broken fishing rod
+        fishing_rod: `<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
             <line x1="2" y1="14" x2="10" y2="3" stroke="#8d6e63" stroke-width="1.5"/>
             <line x1="10" y1="3" x2="12" y2="1" stroke="#8d6e63" stroke-width="1.5" stroke-dasharray="1,1"/>
             <line x1="12" y1="1" x2="14" y2="4" stroke="#90a4ae" stroke-width="0.5"/>
@@ -1118,8 +1150,8 @@
             <circle cx="2" cy="14" r="1.5" fill="#6d4c41"/>
         </svg>`,
 
-            // Carrot
-            carrot: `<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+        // Carrot
+        carrot: `<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
             <polygon points="8,15 4,6 12,6" fill="#ff7043"/>
             <polygon points="8,15 5,8 11,8" fill="#ff5722"/>
             <ellipse cx="8" cy="5" rx="4" ry="2" fill="#4caf50"/>
@@ -1128,8 +1160,8 @@
             <path d="M10 4 L10 1" stroke="#4caf50" stroke-width="1"/>
         </svg>`,
 
-            // Potato
-            potato: `<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+        // Potato
+        potato: `<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
             <ellipse cx="8" cy="9" rx="6" ry="5" fill="#a1887f"/>
             <ellipse cx="8" cy="8" rx="5" ry="4" fill="#bcaaa4"/>
             <circle cx="5" cy="7" r="0.8" fill="#8d6e63"/>
@@ -1137,8 +1169,8 @@
             <circle cx="7" cy="10" r="0.5" fill="#8d6e63"/>
         </svg>`,
 
-            // Tomato
-            tomato: `<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+        // Tomato
+        tomato: `<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
             <circle cx="8" cy="9" r="6" fill="#e53935"/>
             <circle cx="8" cy="9" r="5" fill="#f44336"/>
             <ellipse cx="6" cy="8" rx="2" ry="1.5" fill="#ef5350" opacity="0.5"/>
@@ -1148,8 +1180,8 @@
             <ellipse cx="8" cy="4" rx="3" ry="1.5" fill="#4caf50"/>
         </svg>`,
 
-            // Lettuce
-            lettuce: `<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+        // Lettuce
+        lettuce: `<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
             <ellipse cx="8" cy="10" rx="6" ry="5" fill="#81c784"/>
             <ellipse cx="6" cy="8" rx="4" ry="4" fill="#a5d6a7"/>
             <ellipse cx="10" cy="9" rx="4" ry="4" fill="#66bb6a"/>
@@ -1157,8 +1189,8 @@
             <path d="M8 6 Q6 8 8 10" stroke="#4caf50" stroke-width="0.5" fill="none"/>
         </svg>`,
 
-            // Onion
-            onion: `<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+        // Onion
+        onion: `<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
             <ellipse cx="8" cy="10" rx="5" ry="5" fill="#f3e5ab"/>
             <ellipse cx="8" cy="9" rx="4" ry="4" fill="#fff8e1"/>
             <path d="M8 5 L8 1" stroke="#8bc34a" stroke-width="1.5"/>
@@ -1168,8 +1200,8 @@
             <ellipse cx="8" cy="14" rx="2" ry="1" fill="#bcaaa4"/>
         </svg>`,
 
-            // Golden Hoe - The legendary treasure!
-            golden_hoe: `<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+        // Golden Hoe - The legendary treasure!
+        golden_hoe: `<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
             <!-- Handle -->
             <rect x="7" y="5" width="2" height="10" fill="#8d6e63"/>
             <rect x="6.5" y="5" width="3" height="1" fill="#a1887f"/>
@@ -1182,729 +1214,783 @@
             <!-- Blade edge -->
             <rect x="2" y="4" width="3" height="2" fill="#ffc107"/>
             <polygon points="2,4 5,4 5,6 2,6" fill="#ffd700"/>
-        </svg>`
+        </svg>`,
+      };
+
+      // ============================================
+      // GAME STATE
+      // ============================================
+
+      /**
+       * Centralized game state object
+       * All game data is stored here for predictable state management
+       */
+      let GameState = {
+        grid: [], // 8x8 2D array of GridCell objects
+        playerPosition: { x: 0, y: 0 }, // Greg's current position
+        gameState: GAME_STATES.PLAYING, // Current game state
+        stats: {
+          itemsFound: 0,
+          totalDigs: 0,
+        },
+        foundItems: [], // Array of found item types
+        lastMoveTime: 0, // For movement cooldown
+        celebrationStartTime: 0, // When celebration started
+        animationFrameId: null, // For the game loop
+      };
+
+      /**
+       * GridCell object structure
+       * @typedef {Object} GridCell
+       * @property {string} item - The item type in this cell
+       * @property {boolean} isDug - Whether the cell has been dug
+       * @property {HTMLElement} element - DOM reference
+       */
+
+      // ============================================
+      // INITIALIZATION
+      // ============================================
+
+      /**
+       * Initialize the game - called on page load and restart
+       * Sets up the grid, places items, and starts the game loop
+       */
+      function initializeGame() {
+        console.log("Initializing Greg's Golden Hoe...");
+
+        // Reset game state
+        GameState = {
+          grid: [],
+          playerPosition: {
+            x: Math.floor(Math.random() * GRID_SIZE),
+            y: Math.floor(Math.random() * GRID_SIZE),
+          },
+          gameState: GAME_STATES.PLAYING,
+          stats: { itemsFound: 0, totalDigs: 0 },
+          foundItems: [],
+          lastMoveTime: 0,
+          celebrationStartTime: 0,
+          animationFrameId: null,
+          pendingGoldenHoe: false, // Track if golden hoe was found
+          itemDisplayStartTime: 0, // For item display timing
         };
 
-        // ============================================
-        // GAME STATE
-        // ============================================
+        // Hide overlays
+        document
+          .getElementById("celebrationOverlay")
+          .classList.remove("active");
+        document.getElementById("winScreen").classList.remove("active");
+        document.getElementById("itemFoundOverlay").classList.remove("active");
 
-        /**
-         * Centralized game state object
-         * All game data is stored here for predictable state management
-         */
-        let GameState = {
-            grid: [],                               // 8x8 2D array of GridCell objects
-            playerPosition: { x: 0, y: 0 },         // Greg's current position
-            gameState: GAME_STATES.PLAYING,         // Current game state
-            stats: {
-                itemsFound: 0,
-                totalDigs: 0
-            },
-            foundItems: [],                         // Array of found item types
-            lastMoveTime: 0,                        // For movement cooldown
-            celebrationStartTime: 0,                // When celebration started
-            animationFrameId: null                  // For the game loop
-        };
+        // Clear inventory display
+        const inventoryBar = document.getElementById("inventoryBar");
+        inventoryBar.innerHTML =
+          '<span class="inventory-empty-text">Dig to find items!</span>';
 
-        /**
-         * GridCell object structure
-         * @typedef {Object} GridCell
-         * @property {string} item - The item type in this cell
-         * @property {boolean} isDug - Whether the cell has been dug
-         * @property {HTMLElement} element - DOM reference
-         */
+        // Remove any flying items
+        document.querySelectorAll(".flying-item").forEach((el) => el.remove());
 
-        // ============================================
-        // INITIALIZATION
-        // ============================================
+        // Clear any existing confetti
+        document.querySelectorAll(".confetti").forEach((c) => c.remove());
 
-        /**
-         * Initialize the game - called on page load and restart
-         * Sets up the grid, places items, and starts the game loop
-         */
-        function initializeGame() {
-            console.log('Initializing Greg\'s Golden Hoe...');
+        // Create the grid data structure
+        createGridData();
 
-            // Reset game state
-            GameState = {
-                grid: [],
-                playerPosition: {
-                    x: Math.floor(Math.random() * GRID_SIZE),
-                    y: Math.floor(Math.random() * GRID_SIZE)
-                },
-                gameState: GAME_STATES.PLAYING,
-                stats: { itemsFound: 0, totalDigs: 0 },
-                foundItems: [],
-                lastMoveTime: 0,
-                celebrationStartTime: 0,
-                animationFrameId: null,
-                pendingGoldenHoe: false,        // Track if golden hoe was found
-                itemDisplayStartTime: 0          // For item display timing
-            };
+        // Place items randomly on the grid
+        placeItemsOnGrid();
 
-            // Hide overlays
-            document.getElementById('celebrationOverlay').classList.remove('active');
-            document.getElementById('winScreen').classList.remove('active');
-            document.getElementById('itemFoundOverlay').classList.remove('active');
+        // Render the grid to the DOM
+        renderGrid();
 
-            // Clear inventory display
-            const inventoryBar = document.getElementById('inventoryBar');
-            inventoryBar.innerHTML = '<span class="inventory-empty-text">Dig to find items!</span>';
+        // Update the stats display
 
-            // Remove any flying items
-            document.querySelectorAll('.flying-item').forEach(el => el.remove());
+        // Start the game loop
+        startGameLoop();
 
-            // Clear any existing confetti
-            document.querySelectorAll('.confetti').forEach(c => c.remove());
+        console.log("Game initialized successfully!");
+      }
 
-            // Create the grid data structure
-            createGridData();
+      /**
+       * Create an empty 8x8 grid data structure
+       */
+      function createGridData() {
+        GameState.grid = [];
 
-            // Place items randomly on the grid
-            placeItemsOnGrid();
-
-            // Render the grid to the DOM
-            renderGrid();
-
-            // Update the stats display
-
-            // Start the game loop
-            startGameLoop();
-
-            console.log('Game initialized successfully!');
-        }
-
-        /**
-         * Create an empty 8x8 grid data structure
-         */
-        function createGridData() {
-            GameState.grid = [];
-
-            for (let y = 0; y < GRID_SIZE; y++) {
-                const row = [];
-                for (let x = 0; x < GRID_SIZE; x++) {
-                    row.push({
-                        item: ITEM_TYPES.EMPTY,
-                        isDug: false,
-                        element: null
-                    });
-                }
-                GameState.grid.push(row);
-            }
-        }
-
-        /**
-         * Randomly place items on the grid
-         * Uses Fisher-Yates-like random position selection
-         */
-        function placeItemsOnGrid() {
-            // Create array of all possible positions
-            const positions = [];
-            for (let y = 0; y < GRID_SIZE; y++) {
-                for (let x = 0; x < GRID_SIZE; x++) {
-                    positions.push({ x, y });
-                }
-            }
-
-            // Shuffle positions using Fisher-Yates algorithm
-            for (let i = positions.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [positions[i], positions[j]] = [positions[j], positions[i]];
-            }
-
-            // Place each pre-defined item at a random position
-            PREPLACED_ITEMS.forEach((item, index) => {
-                const pos = positions[index];
-                GameState.grid[pos.y][pos.x].item = item;
+        for (let y = 0; y < GRID_SIZE; y++) {
+          const row = [];
+          for (let x = 0; x < GRID_SIZE; x++) {
+            row.push({
+              item: ITEM_TYPES.EMPTY,
+              isDug: false,
+              element: null,
             });
+          }
+          GameState.grid.push(row);
+        }
+      }
 
-            console.log('Items placed on grid:', PREPLACED_ITEMS.length);
+      /**
+       * Randomly place items on the grid
+       * Uses Fisher-Yates-like random position selection
+       */
+      function placeItemsOnGrid() {
+        // Create array of all possible positions
+        const positions = [];
+        for (let y = 0; y < GRID_SIZE; y++) {
+          for (let x = 0; x < GRID_SIZE; x++) {
+            positions.push({ x, y });
+          }
         }
 
-        /**
-         * Render the grid to the DOM
-         * Creates cell elements and places Greg at starting position
-         */
-        function renderGrid() {
-            const gridElement = document.getElementById('gameGrid');
-            gridElement.innerHTML = '';
-
-            for (let y = 0; y < GRID_SIZE; y++) {
-                for (let x = 0; x < GRID_SIZE; x++) {
-                    const cell = document.createElement('div');
-                    cell.className = 'grid-cell undug';
-                    cell.dataset.x = x;
-                    cell.dataset.y = y;
-
-                    // Add click handler for digging
-                    cell.addEventListener('click', () => handleCellClick(x, y));
-
-                    gridElement.appendChild(cell);
-                    GameState.grid[y][x].element = cell;
-                }
-            }
-
-            // Place Greg at starting position
-            updateGregPosition();
+        // Shuffle positions using Fisher-Yates algorithm
+        for (let i = positions.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [positions[i], positions[j]] = [positions[j], positions[i]];
         }
 
-        // ============================================
-        // GAME LOOP
-        // ============================================
-
-        /**
-         * Start the main game loop using requestAnimationFrame
-         * Handles celebration timer and animations
-         */
-        function startGameLoop() {
-            function gameLoop(timestamp) {
-                // Handle celebration timer
-                if (GameState.gameState === GAME_STATES.CELEBRATING) {
-                    const elapsed = timestamp - GameState.celebrationStartTime;
-                    const remaining = Math.ceil((CELEBRATION_DURATION - elapsed) / 1000);
-
-                    document.getElementById('celebrationTimer').textContent =
-                        `Dancing for ${remaining} seconds...`;
-
-                    // Check if celebration is over
-                    if (elapsed >= CELEBRATION_DURATION) {
-                        endCelebration();
-                    }
-                }
-
-                // Continue the loop if not won
-                if (GameState.gameState !== GAME_STATES.WON) {
-                    GameState.animationFrameId = requestAnimationFrame(gameLoop);
-                }
-            }
-
-            GameState.animationFrameId = requestAnimationFrame(gameLoop);
-        }
-
-        // ============================================
-        // INPUT HANDLING
-        // ============================================
-
-        /**
-         * Handle keyboard input for player movement
-         * @param {KeyboardEvent} event - The keyboard event
-         */
-        function handleKeyDown(event) {
-            // Ignore input if not in playing state
-            if (GameState.gameState !== GAME_STATES.PLAYING) {
-                return;
-            }
-
-            // Check movement cooldown to prevent spam
-            const now = performance.now();
-            if (now - GameState.lastMoveTime < MOVE_COOLDOWN) {
-                return;
-            }
-
-            let newX = GameState.playerPosition.x;
-            let newY = GameState.playerPosition.y;
-
-            switch (event.key) {
-                case 'ArrowUp':
-                    newY = Math.max(0, newY - 1);
-                    event.preventDefault(); // Prevent page scrolling
-                    break;
-                case 'ArrowDown':
-                    newY = Math.min(GRID_SIZE - 1, newY + 1);
-                    event.preventDefault();
-                    break;
-                case 'ArrowLeft':
-                    newX = Math.max(0, newX - 1);
-                    event.preventDefault();
-                    break;
-                case 'ArrowRight':
-                    newX = Math.min(GRID_SIZE - 1, newX + 1);
-                    event.preventDefault();
-                    break;
-                case ' ': // Spacebar to dig
-                    event.preventDefault();
-                    performDig(GameState.playerPosition.x, GameState.playerPosition.y);
-                    return;
-                default:
-                    return; // Ignore other keys
-            }
-
-            // Update position if it changed
-            if (newX !== GameState.playerPosition.x || newY !== GameState.playerPosition.y) {
-                GameState.playerPosition.x = newX;
-                GameState.playerPosition.y = newY;
-                GameState.lastMoveTime = now;
-                updateGregPosition();
-            }
-        }
-
-        /**
-         * Handle cell click for digging
-         * @param {number} x - X coordinate of clicked cell
-         * @param {number} y - Y coordinate of clicked cell
-         */
-        function handleCellClick(x, y) {
-            // Only allow digging if Greg is on this cell
-            if (x !== GameState.playerPosition.x || y !== GameState.playerPosition.y) {
-                return;
-            }
-
-            // Only allow digging in playing state
-            if (GameState.gameState !== GAME_STATES.PLAYING) {
-                return;
-            }
-
-            // Perform the dig action
-            performDig(x, y);
-        }
-
-        // ============================================
-        // GAME ACTIONS
-        // ============================================
-
-        /**
-         * Perform a dig action at the specified position
-         * @param {number} x - X coordinate
-         * @param {number} y - Y coordinate
-         */
-        function performDig(x, y) {
-            const cell = GameState.grid[y][x];
-
-            // Check if already dug
-            if (cell.isDug) {
-                console.log('This square has already been dug!');
-                return;
-            }
-
-            // Mark as dug
-            cell.isDug = true;
-            GameState.stats.totalDigs++;
-
-            // Update cell appearance
-            cell.element.classList.remove('undug');
-            cell.element.classList.add('dug');
-
-            // Create dig particle effect
-            createDigEffect(cell.element);
-
-            // Check for golden hoe (10% chance)
-            const foundGoldenHoe = Math.random() < GOLDEN_HOE_CHANCE;
-
-            if (foundGoldenHoe) {
-                // Golden hoe found!
-                cell.item = ITEM_TYPES.GOLDEN_HOE;
-                GameState.stats.itemsFound++;
-                GameState.foundItems.push(ITEM_TYPES.GOLDEN_HOE);
-                GameState.pendingGoldenHoe = true;
-                revealItem(cell);
-                // Show the item display overlay, celebration will start after
-                showItemFoundOverlay(ITEM_TYPES.GOLDEN_HOE);
-            } else if (cell.item !== ITEM_TYPES.EMPTY) {
-                // Found a pre-placed item
-                GameState.stats.itemsFound++;
-                GameState.foundItems.push(cell.item);
-                revealItem(cell);
-                // Show the item display overlay
-                showItemFoundOverlay(cell.item);
-            }
-
-        }
-
-        /**
-         * Show the item found overlay with the discovered item
-         * @param {string} itemType - The type of item found
-         */
-        function showItemFoundOverlay(itemType) {
-            console.log('Showing item found overlay for:', itemType);
-
-            // Change game state to prevent movement
-            GameState.gameState = GAME_STATES.SHOWING_ITEM;
-            GameState.itemDisplayStartTime = performance.now();
-
-            // Update overlay content
-            const overlay = document.getElementById('itemFoundOverlay');
-            const display = document.getElementById('itemFoundDisplay');
-            const name = document.getElementById('itemFoundName');
-
-            // Set the item sprite at 4x size (handled by CSS)
-            display.innerHTML = SPRITES[itemType] || '';
-            name.textContent = ITEM_NAMES[itemType] || itemType;
-
-            // Show overlay
-            overlay.classList.add('active');
-
-            // After 3 seconds, hide overlay and animate item to inventory
-            setTimeout(() => {
-                hideItemFoundOverlayAndAnimate(itemType);
-            }, ITEM_DISPLAY_DURATION);
-        }
-
-        /**
-         * Hide the item found overlay and animate the item flying to inventory
-         * @param {string} itemType - The type of item to animate
-         */
-        function hideItemFoundOverlayAndAnimate(itemType) {
-            const overlay = document.getElementById('itemFoundOverlay');
-            const display = document.getElementById('itemFoundDisplay');
-
-            // Get the position of the display item
-            const displayRect = display.getBoundingClientRect();
-
-            // Create flying item element
-            const flyingItem = document.createElement('div');
-            flyingItem.className = 'flying-item';
-            flyingItem.innerHTML = SPRITES[itemType] || '';
-
-            // Set initial position and size (same as display)
-            flyingItem.style.left = displayRect.left + 'px';
-            flyingItem.style.top = displayRect.top + 'px';
-            flyingItem.style.width = displayRect.width + 'px';
-            flyingItem.style.height = displayRect.height + 'px';
-
-            document.body.appendChild(flyingItem);
-
-            // Hide the overlay
-            overlay.classList.remove('active');
-
-            // Get target position (inventory bar)
-            const inventoryBar = document.getElementById('inventoryBar');
-            const inventoryRect = inventoryBar.getBoundingClientRect();
-
-            // Calculate target position (center of inventory, but at slot size)
-            const targetSize = 40; // Same as inventory slot
-            const targetX = inventoryRect.left + (inventoryRect.width / 2) - (targetSize / 2);
-            const targetY = inventoryRect.top + (inventoryRect.height / 2) - (targetSize / 2);
-
-            // Force reflow to ensure transition works
-            flyingItem.offsetHeight;
-
-            // Animate to inventory position
-            flyingItem.style.left = targetX + 'px';
-            flyingItem.style.top = targetY + 'px';
-            flyingItem.style.width = targetSize + 'px';
-            flyingItem.style.height = targetSize + 'px';
-
-            // After animation completes, add to inventory and remove flying item
-            setTimeout(() => {
-                flyingItem.remove();
-                addItemToInventory(itemType);
-
-                // Check if we need to start celebration (golden hoe was found)
-                if (GameState.pendingGoldenHoe) {
-                    GameState.pendingGoldenHoe = false;
-                    startCelebration();
-                } else {
-                    // Return to playing state
-                    GameState.gameState = GAME_STATES.PLAYING;
-                }
-            }, ITEM_FLY_DURATION);
-        }
-
-        /**
-         * Add an item to the inventory bar display
-         * @param {string} itemType - The type of item to add
-         */
-        function addItemToInventory(itemType) {
-            const inventoryBar = document.getElementById('inventoryBar');
-
-            // Remove empty text if present
-            const emptyText = inventoryBar.querySelector('.inventory-empty-text');
-            if (emptyText) {
-                emptyText.remove();
-            }
-
-            // Create inventory slot
-            const slot = document.createElement('div');
-            slot.className = 'inventory-slot';
-            slot.innerHTML = SPRITES[itemType] || '';
-            slot.title = ITEM_NAMES[itemType] || itemType;
-
-            // Add special styling for golden hoe
-            if (itemType === ITEM_TYPES.GOLDEN_HOE) {
-                slot.classList.add('golden-hoe');
-            }
-
-            // Add with a small animation
-            slot.style.transform = 'scale(0)';
-            inventoryBar.appendChild(slot);
-
-            // Trigger animation
-            requestAnimationFrame(() => {
-                slot.style.transition = 'transform 0.3s ease';
-                slot.style.transform = 'scale(1)';
-            });
-
-            console.log('Added', itemType, 'to inventory');
-        }
-
-        /**
-         * Reveal an item in a cell by adding its sprite
-         * @param {GridCell} cell - The cell containing the item
-         */
-        function revealItem(cell) {
-            if (cell.item === ITEM_TYPES.EMPTY) return;
-
-            const itemElement = document.createElement('div');
-            itemElement.className = 'item-sprite';
-            itemElement.innerHTML = SPRITES[cell.item] || '';
-
-            // Add special class for golden hoe
-            if (cell.item === ITEM_TYPES.GOLDEN_HOE) {
-                itemElement.classList.add('golden-hoe');
-            }
-
-            cell.element.appendChild(itemElement);
-        }
-
-        /**
-         * Create a particle effect when digging
-         * @param {HTMLElement} cellElement - The cell DOM element
-         */
-        function createDigEffect(cellElement) {
-            const effectContainer = document.createElement('div');
-            effectContainer.className = 'dig-effect';
-
-            // Create multiple dirt particles
-            for (let i = 0; i < 8; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'dig-particle';
-
-                // Random direction for each particle
-                const angle = (i / 8) * Math.PI * 2;
-                const distance = 20 + Math.random() * 20;
-                particle.style.setProperty('--tx', `${Math.cos(angle) * distance}px`);
-                particle.style.setProperty('--ty', `${Math.sin(angle) * distance}px`);
-                particle.style.left = '50%';
-                particle.style.top = '50%';
-
-                effectContainer.appendChild(particle);
-            }
-
-            cellElement.appendChild(effectContainer);
-
-            // Remove after animation completes
-            setTimeout(() => effectContainer.remove(), 500);
-        }
-
-        // ============================================
-        // UI UPDATES
-        // ============================================
-
-        /**
-         * Update Greg's position on the grid
-         * Moves the sprite to the new cell
-         */
-        function updateGregPosition() {
-            // Remove Greg from all cells first
-            document.querySelectorAll('.greg-sprite').forEach(el => el.remove());
-
-            // Get the current cell
-            const currentCell = GameState.grid[GameState.playerPosition.y][GameState.playerPosition.x];
-
-            // Create Greg sprite
-            const gregElement = document.createElement('div');
-            gregElement.className = 'greg-sprite';
-            gregElement.innerHTML = SPRITES.greg;
-
-            // Add dancing class if celebrating
-            if (GameState.gameState === GAME_STATES.CELEBRATING) {
-                gregElement.classList.add('dancing');
-            }
-
-            currentCell.element.appendChild(gregElement);
-        }
-
-
-
-        // ============================================
-        // CELEBRATION & WIN
-        // ============================================
-
-        /**
-         * Start the celebration sequence when golden hoe is found
-         */
-        function startCelebration() {
-            console.log('GOLDEN HOE FOUND! Starting celebration...');
-
-            GameState.gameState = GAME_STATES.CELEBRATING;
-            GameState.celebrationStartTime = performance.now();
-
-            // Show celebration overlay
-            document.getElementById('celebrationOverlay').classList.add('active');
-
-            // Make Greg dance
-            const gregSprite = document.querySelector('.greg-sprite');
-            if (gregSprite) {
-                gregSprite.classList.add('dancing');
-            }
-
-            // Create confetti
-            createConfetti();
-        }
-
-        /**
-         * Create confetti particles for celebration
-         */
-        function createConfetti() {
-            const colors = ['#ffd700', '#ff6b6b', '#4ecdc4', '#45b7d1', '#96e6a1', '#dda0dd'];
-
-            // Create confetti at intervals
-            const confettiInterval = setInterval(() => {
-                if (GameState.gameState !== GAME_STATES.CELEBRATING) {
-                    clearInterval(confettiInterval);
-                    return;
-                }
-
-                for (let i = 0; i < 5; i++) {
-                    const confetti = document.createElement('div');
-                    confetti.className = 'confetti';
-                    confetti.style.left = Math.random() * 100 + 'vw';
-                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                    confetti.style.animationDuration = (2 + Math.random() * 2) + 's';
-                    document.body.appendChild(confetti);
-
-                    // Remove after animation
-                    setTimeout(() => confetti.remove(), 5000);
-                }
-            }, 200);
-        }
-
-        /**
-         * End the celebration and show the win screen
-         */
-        function endCelebration() {
-            console.log('Celebration complete! Showing win screen...');
-
-            GameState.gameState = GAME_STATES.WON;
-
-            // Hide celebration overlay
-            document.getElementById('celebrationOverlay').classList.remove('active');
-
-            // Stop Greg's dance
-            const gregSprite = document.querySelector('.greg-sprite');
-            if (gregSprite) {
-                gregSprite.classList.remove('dancing');
-            }
-
-            // Clear confetti
-            document.querySelectorAll('.confetti').forEach(c => c.remove());
-
-            // Show win screen with stats
-            showWinScreen();
-        }
-
-        /**
-         * Display the victory screen with game statistics
-         */
-        function showWinScreen() {
-            // Update final stats
-            document.getElementById('finalDigs').textContent = GameState.stats.totalDigs;
-            document.getElementById('finalItems').textContent = GameState.stats.itemsFound;
-
-            // Display collected items
-            const itemsContainer = document.getElementById('itemsCollected');
-            itemsContainer.innerHTML = '';
-
-            GameState.foundItems.forEach(item => {
-                const itemDiv = document.createElement('div');
-                itemDiv.className = 'collected-item';
-                itemDiv.innerHTML = SPRITES[item] || '';
-                itemDiv.title = item.replace('_', ' ').toUpperCase();
-                itemsContainer.appendChild(itemDiv);
-            });
-
-            // Show the win screen
-            document.getElementById('winScreen').classList.add('active');
-        }
-
-        // ============================================
-        // EVENT LISTENERS
-        // ============================================
-
-        // Keyboard controls
-        document.addEventListener('keydown', handleKeyDown);
-
-        // Restart button
-        document.getElementById('restartBtn').addEventListener('click', () => {
-            console.log('Restarting game...');
-            initializeGame();
+        // Place each pre-defined item at a random position
+        PREPLACED_ITEMS.forEach((item, index) => {
+          const pos = positions[index];
+          GameState.grid[pos.y][pos.x].item = item;
         });
 
-        // Prevent context menu on grid (for cleaner experience)
-        document.getElementById('gameGrid').addEventListener('contextmenu', e => e.preventDefault());
+        console.log("Items placed on grid:", PREPLACED_ITEMS.length);
+      }
 
-        // ============================================
-        // D-PAD TOUCH CONTROLS
-        // ============================================
+      /**
+       * Render the grid to the DOM
+       * Creates cell elements and places Greg at starting position
+       */
+      function renderGrid() {
+        const gridElement = document.getElementById("gameGrid");
+        gridElement.innerHTML = "";
 
-        /**
-         * Handle d-pad button press for mobile controls
-         * @param {string} direction - 'up', 'down', 'left', 'right', or 'dig'
-         */
-        function handleDpadPress(direction) {
-            // Ignore input if not in playing state
-            if (GameState.gameState !== GAME_STATES.PLAYING) {
-                return;
-            }
+        for (let y = 0; y < GRID_SIZE; y++) {
+          for (let x = 0; x < GRID_SIZE; x++) {
+            const cell = document.createElement("div");
+            cell.className = "grid-cell undug";
+            cell.dataset.x = x;
+            cell.dataset.y = y;
 
-            if (direction === 'dig') {
-                // Perform dig at current position
-                performDig(GameState.playerPosition.x, GameState.playerPosition.y);
-                return;
-            }
+            // Add click handler for digging
+            cell.addEventListener("click", () => handleCellClick(x, y));
 
-            // Handle movement
-            let newX = GameState.playerPosition.x;
-            let newY = GameState.playerPosition.y;
-
-            switch (direction) {
-                case 'up':
-                    newY = Math.max(0, newY - 1);
-                    break;
-                case 'down':
-                    newY = Math.min(GRID_SIZE - 1, newY + 1);
-                    break;
-                case 'left':
-                    newX = Math.max(0, newX - 1);
-                    break;
-                case 'right':
-                    newX = Math.min(GRID_SIZE - 1, newX + 1);
-                    break;
-            }
-
-            if (newX !== GameState.playerPosition.x || newY !== GameState.playerPosition.y) {
-                GameState.playerPosition.x = newX;
-                GameState.playerPosition.y = newY;
-                updateGregPosition();
-            }
+            gridElement.appendChild(cell);
+            GameState.grid[y][x].element = cell;
+          }
         }
 
-        // Add d-pad event listeners (both touch and click for flexibility)
-        document.getElementById('dpadUp').addEventListener('click', () => handleDpadPress('up'));
-        document.getElementById('dpadDown').addEventListener('click', () => handleDpadPress('down'));
-        document.getElementById('dpadLeft').addEventListener('click', () => handleDpadPress('left'));
-        document.getElementById('dpadRight').addEventListener('click', () => handleDpadPress('right'));
-        document.getElementById('dpadDig').addEventListener('click', () => handleDpadPress('dig'));
+        // Place Greg at starting position
+        updateGregPosition();
+      }
 
-        // Prevent default touch behaviors on d-pad for better mobile experience
-        document.getElementById('dpadContainer').addEventListener('touchstart', e => {
+      // ============================================
+      // GAME LOOP
+      // ============================================
+
+      /**
+       * Start the main game loop using requestAnimationFrame
+       * Handles celebration timer and animations
+       */
+      function startGameLoop() {
+        function gameLoop(timestamp) {
+          // Handle celebration timer
+          if (GameState.gameState === GAME_STATES.CELEBRATING) {
+            const elapsed = timestamp - GameState.celebrationStartTime;
+            const remaining = Math.ceil(
+              (CELEBRATION_DURATION - elapsed) / 1000,
+            );
+
+            document.getElementById("celebrationTimer").textContent =
+              `Dancing for ${remaining} seconds...`;
+
+            // Check if celebration is over
+            if (elapsed >= CELEBRATION_DURATION) {
+              endCelebration();
+            }
+          }
+
+          // Continue the loop if not won
+          if (GameState.gameState !== GAME_STATES.WON) {
+            GameState.animationFrameId = requestAnimationFrame(gameLoop);
+          }
+        }
+
+        GameState.animationFrameId = requestAnimationFrame(gameLoop);
+      }
+
+      // ============================================
+      // INPUT HANDLING
+      // ============================================
+
+      /**
+       * Handle keyboard input for player movement
+       * @param {KeyboardEvent} event - The keyboard event
+       */
+      function handleKeyDown(event) {
+        // Ignore input if not in playing state
+        if (GameState.gameState !== GAME_STATES.PLAYING) {
+          return;
+        }
+
+        // Check movement cooldown to prevent spam
+        const now = performance.now();
+        if (now - GameState.lastMoveTime < MOVE_COOLDOWN) {
+          return;
+        }
+
+        let newX = GameState.playerPosition.x;
+        let newY = GameState.playerPosition.y;
+
+        switch (event.key) {
+          case "ArrowUp":
+            newY = Math.max(0, newY - 1);
+            event.preventDefault(); // Prevent page scrolling
+            break;
+          case "ArrowDown":
+            newY = Math.min(GRID_SIZE - 1, newY + 1);
+            event.preventDefault();
+            break;
+          case "ArrowLeft":
+            newX = Math.max(0, newX - 1);
+            event.preventDefault();
+            break;
+          case "ArrowRight":
+            newX = Math.min(GRID_SIZE - 1, newX + 1);
+            event.preventDefault();
+            break;
+          case " ": // Spacebar to dig
+            event.preventDefault();
+            performDig(GameState.playerPosition.x, GameState.playerPosition.y);
+            return;
+          default:
+            return; // Ignore other keys
+        }
+
+        // Update position if it changed
+        if (
+          newX !== GameState.playerPosition.x ||
+          newY !== GameState.playerPosition.y
+        ) {
+          GameState.playerPosition.x = newX;
+          GameState.playerPosition.y = newY;
+          GameState.lastMoveTime = now;
+          updateGregPosition();
+        }
+      }
+
+      /**
+       * Handle cell click for digging
+       * @param {number} x - X coordinate of clicked cell
+       * @param {number} y - Y coordinate of clicked cell
+       */
+      function handleCellClick(x, y) {
+        // Only allow digging if Greg is on this cell
+        if (
+          x !== GameState.playerPosition.x ||
+          y !== GameState.playerPosition.y
+        ) {
+          return;
+        }
+
+        // Only allow digging in playing state
+        if (GameState.gameState !== GAME_STATES.PLAYING) {
+          return;
+        }
+
+        // Perform the dig action
+        performDig(x, y);
+      }
+
+      // ============================================
+      // GAME ACTIONS
+      // ============================================
+
+      /**
+       * Perform a dig action at the specified position
+       * @param {number} x - X coordinate
+       * @param {number} y - Y coordinate
+       */
+      function performDig(x, y) {
+        const cell = GameState.grid[y][x];
+
+        // Check if already dug
+        if (cell.isDug) {
+          console.log("This square has already been dug!");
+          return;
+        }
+
+        // Mark as dug
+        cell.isDug = true;
+        GameState.stats.totalDigs++;
+
+        // Update cell appearance
+        cell.element.classList.remove("undug");
+        cell.element.classList.add("dug");
+
+        // Create dig particle effect
+        createDigEffect(cell.element);
+
+        // Check for golden hoe (10% chance)
+        const foundGoldenHoe = Math.random() < GOLDEN_HOE_CHANCE;
+
+        if (foundGoldenHoe) {
+          // Golden hoe found!
+          cell.item = ITEM_TYPES.GOLDEN_HOE;
+          GameState.stats.itemsFound++;
+          GameState.foundItems.push(ITEM_TYPES.GOLDEN_HOE);
+          GameState.pendingGoldenHoe = true;
+          revealItem(cell);
+          // Show the item display overlay, celebration will start after
+          showItemFoundOverlay(ITEM_TYPES.GOLDEN_HOE);
+        } else if (cell.item !== ITEM_TYPES.EMPTY) {
+          // Found a pre-placed item
+          GameState.stats.itemsFound++;
+          GameState.foundItems.push(cell.item);
+          revealItem(cell);
+          // Show the item display overlay
+          showItemFoundOverlay(cell.item);
+        }
+      }
+
+      /**
+       * Show the item found overlay with the discovered item
+       * @param {string} itemType - The type of item found
+       */
+      function showItemFoundOverlay(itemType) {
+        console.log("Showing item found overlay for:", itemType);
+
+        // Change game state to prevent movement
+        GameState.gameState = GAME_STATES.SHOWING_ITEM;
+        GameState.itemDisplayStartTime = performance.now();
+
+        // Update overlay content
+        const overlay = document.getElementById("itemFoundOverlay");
+        const display = document.getElementById("itemFoundDisplay");
+        const name = document.getElementById("itemFoundName");
+
+        // Set the item sprite at 4x size (handled by CSS)
+        display.innerHTML = SPRITES[itemType] || "";
+        name.textContent = ITEM_NAMES[itemType] || itemType;
+
+        // Show overlay
+        overlay.classList.add("active");
+
+        // After 3 seconds, hide overlay and animate item to inventory
+        setTimeout(() => {
+          hideItemFoundOverlayAndAnimate(itemType);
+        }, ITEM_DISPLAY_DURATION);
+      }
+
+      /**
+       * Hide the item found overlay and animate the item flying to inventory
+       * @param {string} itemType - The type of item to animate
+       */
+      function hideItemFoundOverlayAndAnimate(itemType) {
+        const overlay = document.getElementById("itemFoundOverlay");
+        const display = document.getElementById("itemFoundDisplay");
+
+        // Get the position of the display item
+        const displayRect = display.getBoundingClientRect();
+
+        // Create flying item element
+        const flyingItem = document.createElement("div");
+        flyingItem.className = "flying-item";
+        flyingItem.innerHTML = SPRITES[itemType] || "";
+
+        // Set initial position and size (same as display)
+        flyingItem.style.left = displayRect.left + "px";
+        flyingItem.style.top = displayRect.top + "px";
+        flyingItem.style.width = displayRect.width + "px";
+        flyingItem.style.height = displayRect.height + "px";
+
+        document.body.appendChild(flyingItem);
+
+        // Hide the overlay
+        overlay.classList.remove("active");
+
+        // Get target position (inventory bar)
+        const inventoryBar = document.getElementById("inventoryBar");
+        const inventoryRect = inventoryBar.getBoundingClientRect();
+
+        // Calculate target position (center of inventory, but at slot size)
+        const targetSize = 40; // Same as inventory slot
+        const targetX =
+          inventoryRect.left + inventoryRect.width / 2 - targetSize / 2;
+        const targetY =
+          inventoryRect.top + inventoryRect.height / 2 - targetSize / 2;
+
+        // Force reflow to ensure transition works
+        flyingItem.offsetHeight;
+
+        // Animate to inventory position
+        flyingItem.style.left = targetX + "px";
+        flyingItem.style.top = targetY + "px";
+        flyingItem.style.width = targetSize + "px";
+        flyingItem.style.height = targetSize + "px";
+
+        // After animation completes, add to inventory and remove flying item
+        setTimeout(() => {
+          flyingItem.remove();
+          addItemToInventory(itemType);
+
+          // Check if we need to start celebration (golden hoe was found)
+          if (GameState.pendingGoldenHoe) {
+            GameState.pendingGoldenHoe = false;
+            startCelebration();
+          } else {
+            // Return to playing state
+            GameState.gameState = GAME_STATES.PLAYING;
+          }
+        }, ITEM_FLY_DURATION);
+      }
+
+      /**
+       * Add an item to the inventory bar display
+       * @param {string} itemType - The type of item to add
+       */
+      function addItemToInventory(itemType) {
+        const inventoryBar = document.getElementById("inventoryBar");
+
+        // Remove empty text if present
+        const emptyText = inventoryBar.querySelector(".inventory-empty-text");
+        if (emptyText) {
+          emptyText.remove();
+        }
+
+        // Create inventory slot
+        const slot = document.createElement("div");
+        slot.className = "inventory-slot";
+        slot.innerHTML = SPRITES[itemType] || "";
+        slot.title = ITEM_NAMES[itemType] || itemType;
+
+        // Add special styling for golden hoe
+        if (itemType === ITEM_TYPES.GOLDEN_HOE) {
+          slot.classList.add("golden-hoe");
+        }
+
+        // Add with a small animation
+        slot.style.transform = "scale(0)";
+        inventoryBar.appendChild(slot);
+
+        // Trigger animation
+        requestAnimationFrame(() => {
+          slot.style.transition = "transform 0.3s ease";
+          slot.style.transform = "scale(1)";
+        });
+
+        console.log("Added", itemType, "to inventory");
+      }
+
+      /**
+       * Reveal an item in a cell by adding its sprite
+       * @param {GridCell} cell - The cell containing the item
+       */
+      function revealItem(cell) {
+        if (cell.item === ITEM_TYPES.EMPTY) return;
+
+        const itemElement = document.createElement("div");
+        itemElement.className = "item-sprite";
+        itemElement.innerHTML = SPRITES[cell.item] || "";
+
+        // Add special class for golden hoe
+        if (cell.item === ITEM_TYPES.GOLDEN_HOE) {
+          itemElement.classList.add("golden-hoe");
+        }
+
+        cell.element.appendChild(itemElement);
+      }
+
+      /**
+       * Create a particle effect when digging
+       * @param {HTMLElement} cellElement - The cell DOM element
+       */
+      function createDigEffect(cellElement) {
+        const effectContainer = document.createElement("div");
+        effectContainer.className = "dig-effect";
+
+        // Create multiple dirt particles
+        for (let i = 0; i < 8; i++) {
+          const particle = document.createElement("div");
+          particle.className = "dig-particle";
+
+          // Random direction for each particle
+          const angle = (i / 8) * Math.PI * 2;
+          const distance = 20 + Math.random() * 20;
+          particle.style.setProperty("--tx", `${Math.cos(angle) * distance}px`);
+          particle.style.setProperty("--ty", `${Math.sin(angle) * distance}px`);
+          particle.style.left = "50%";
+          particle.style.top = "50%";
+
+          effectContainer.appendChild(particle);
+        }
+
+        cellElement.appendChild(effectContainer);
+
+        // Remove after animation completes
+        setTimeout(() => effectContainer.remove(), 500);
+      }
+
+      // ============================================
+      // UI UPDATES
+      // ============================================
+
+      /**
+       * Update Greg's position on the grid
+       * Moves the sprite to the new cell
+       */
+      function updateGregPosition() {
+        // Remove Greg from all cells first
+        document.querySelectorAll(".greg-sprite").forEach((el) => el.remove());
+
+        // Get the current cell
+        const currentCell =
+          GameState.grid[GameState.playerPosition.y][
+            GameState.playerPosition.x
+          ];
+
+        // Create Greg sprite
+        const gregElement = document.createElement("div");
+        gregElement.className = "greg-sprite";
+        gregElement.innerHTML = SPRITES.greg;
+
+        // Add dancing class if celebrating
+        if (GameState.gameState === GAME_STATES.CELEBRATING) {
+          gregElement.classList.add("dancing");
+        }
+
+        currentCell.element.appendChild(gregElement);
+      }
+
+      // ============================================
+      // CELEBRATION & WIN
+      // ============================================
+
+      /**
+       * Start the celebration sequence when golden hoe is found
+       */
+      function startCelebration() {
+        console.log("GOLDEN HOE FOUND! Starting celebration...");
+
+        GameState.gameState = GAME_STATES.CELEBRATING;
+        GameState.celebrationStartTime = performance.now();
+
+        // Show celebration overlay
+        document.getElementById("celebrationOverlay").classList.add("active");
+
+        // Make Greg dance
+        const gregSprite = document.querySelector(".greg-sprite");
+        if (gregSprite) {
+          gregSprite.classList.add("dancing");
+        }
+
+        // Create confetti
+        createConfetti();
+      }
+
+      /**
+       * Create confetti particles for celebration
+       */
+      function createConfetti() {
+        const colors = [
+          "#ffd700",
+          "#ff6b6b",
+          "#4ecdc4",
+          "#45b7d1",
+          "#96e6a1",
+          "#dda0dd",
+        ];
+
+        // Create confetti at intervals
+        const confettiInterval = setInterval(() => {
+          if (GameState.gameState !== GAME_STATES.CELEBRATING) {
+            clearInterval(confettiInterval);
+            return;
+          }
+
+          for (let i = 0; i < 5; i++) {
+            const confetti = document.createElement("div");
+            confetti.className = "confetti";
+            confetti.style.left = Math.random() * 100 + "vw";
+            confetti.style.backgroundColor =
+              colors[Math.floor(Math.random() * colors.length)];
+            confetti.style.animationDuration = 2 + Math.random() * 2 + "s";
+            document.body.appendChild(confetti);
+
+            // Remove after animation
+            setTimeout(() => confetti.remove(), 5000);
+          }
+        }, 200);
+      }
+
+      /**
+       * End the celebration and show the win screen
+       */
+      function endCelebration() {
+        console.log("Celebration complete! Showing win screen...");
+
+        GameState.gameState = GAME_STATES.WON;
+
+        // Hide celebration overlay
+        document
+          .getElementById("celebrationOverlay")
+          .classList.remove("active");
+
+        // Stop Greg's dance
+        const gregSprite = document.querySelector(".greg-sprite");
+        if (gregSprite) {
+          gregSprite.classList.remove("dancing");
+        }
+
+        // Clear confetti
+        document.querySelectorAll(".confetti").forEach((c) => c.remove());
+
+        // Show win screen with stats
+        showWinScreen();
+      }
+
+      /**
+       * Display the victory screen with game statistics
+       */
+      function showWinScreen() {
+        // Update final stats
+        document.getElementById("finalDigs").textContent =
+          GameState.stats.totalDigs;
+        document.getElementById("finalItems").textContent =
+          GameState.stats.itemsFound;
+
+        // Display collected items
+        const itemsContainer = document.getElementById("itemsCollected");
+        itemsContainer.innerHTML = "";
+
+        GameState.foundItems.forEach((item) => {
+          const itemDiv = document.createElement("div");
+          itemDiv.className = "collected-item";
+          itemDiv.innerHTML = SPRITES[item] || "";
+          itemDiv.title = item.replace("_", " ").toUpperCase();
+          itemsContainer.appendChild(itemDiv);
+        });
+
+        // Show the win screen
+        document.getElementById("winScreen").classList.add("active");
+      }
+
+      // ============================================
+      // EVENT LISTENERS
+      // ============================================
+
+      // Keyboard controls
+      document.addEventListener("keydown", handleKeyDown);
+
+      // Restart button
+      document.getElementById("restartBtn").addEventListener("click", () => {
+        console.log("Restarting game...");
+        initializeGame();
+      });
+
+      // Prevent context menu on grid (for cleaner experience)
+      document
+        .getElementById("gameGrid")
+        .addEventListener("contextmenu", (e) => e.preventDefault());
+
+      // ============================================
+      // D-PAD TOUCH CONTROLS
+      // ============================================
+
+      /**
+       * Handle d-pad button press for mobile controls
+       * @param {string} direction - 'up', 'down', 'left', 'right', or 'dig'
+       */
+      function handleDpadPress(direction) {
+        // Ignore input if not in playing state
+        if (GameState.gameState !== GAME_STATES.PLAYING) {
+          return;
+        }
+
+        if (direction === "dig") {
+          // Perform dig at current position
+          performDig(GameState.playerPosition.x, GameState.playerPosition.y);
+          return;
+        }
+
+        // Handle movement
+        let newX = GameState.playerPosition.x;
+        let newY = GameState.playerPosition.y;
+
+        switch (direction) {
+          case "up":
+            newY = Math.max(0, newY - 1);
+            break;
+          case "down":
+            newY = Math.min(GRID_SIZE - 1, newY + 1);
+            break;
+          case "left":
+            newX = Math.max(0, newX - 1);
+            break;
+          case "right":
+            newX = Math.min(GRID_SIZE - 1, newX + 1);
+            break;
+        }
+
+        if (
+          newX !== GameState.playerPosition.x ||
+          newY !== GameState.playerPosition.y
+        ) {
+          GameState.playerPosition.x = newX;
+          GameState.playerPosition.y = newY;
+          updateGregPosition();
+        }
+      }
+
+      // Helper to bind touches and clicks
+      function bindDpadButton(id, direction) {
+        const btn = document.getElementById(id);
+        const handler = (e) => {
+          e.preventDefault(); // Prevent default browser handling (scrolling, etc)
+          handleDpadPress(direction);
+        };
+
+        // Handle touch (mobile)
+        btn.addEventListener("touchstart", handler, { passive: false });
+
+        // Handle click (desktop) mechanism
+        btn.addEventListener("mousedown", handler);
+      }
+
+      bindDpadButton("dpadUp", "up");
+      bindDpadButton("dpadDown", "down");
+      bindDpadButton("dpadLeft", "left");
+      bindDpadButton("dpadRight", "right");
+      bindDpadButton("dpadDig", "dig");
+
+      // Prevent default touch behaviors on d-pad container to stop scrolling
+      document.getElementById("dpadContainer").addEventListener(
+        "touchstart",
+        (e) => {
+          if (
+            e.target.id === "dpadContainer" ||
+            e.target.classList.contains("dpad-empty")
+          ) {
             e.preventDefault();
-        }, { passive: false });
+          }
+        },
+        { passive: false },
+      );
 
-        // ============================================
-        // START THE GAME!
-        // ============================================
+      // ============================================
+      // START THE GAME!
+      // ============================================
 
-        // Initialize when DOM is ready
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initializeGame);
-        } else {
-            initializeGame();
-        }
+      // Initialize when DOM is ready
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initializeGame);
+      } else {
+        initializeGame();
+      }
 
-        console.log('Greg\'s Golden Hoe game loaded! Good luck finding the treasure!');
+      console.log(
+        "Greg's Golden Hoe game loaded! Good luck finding the treasure!",
+      );
     </script>
-</body>
-
+  </body>
 </html>
