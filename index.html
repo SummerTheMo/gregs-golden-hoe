@@ -13,14 +13,38 @@
     HOW TO PLAY:
     1. Open this file in any modern web browser
     2. Use arrow keys (↑↓←→) to move Greg the spider
-    3. Click to dig at Greg's current position
+    3. Press SPACEBAR or click to dig at Greg's current position
     4. Find the legendary Golden Hoe to win!
     
-    The golden hoe has a 25% chance to appear each dig.
+    The golden hoe has a 10% chance to appear each dig.
     Discover tools and vegetables along the way!
     
     =====================================================
     -->
+    <!-- Google Analytics 4 -->
+    <!-- GA_MEASUREMENT_ID will be replaced by GitHub Actions during deployment -->
+    <script>
+        (function () {
+            var GA_MEASUREMENT_ID = '__GA_MEASUREMENT_ID__';
+
+            // Only initialize if placeholder has been replaced with actual ID
+            if (GA_MEASUREMENT_ID && GA_MEASUREMENT_ID !== '__GA_MEASUREMENT_ID__' && GA_MEASUREMENT_ID.startsWith('G-')) {
+                // Load gtag.js dynamically
+                var script = document.createElement('script');
+                script.async = true;
+                script.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_MEASUREMENT_ID;
+                document.head.appendChild(script);
+
+                // Initialize gtag
+                window.dataLayer = window.dataLayer || [];
+                function gtag() { dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', GA_MEASUREMENT_ID);
+
+                console.log('Google Analytics initialized with ID:', GA_MEASUREMENT_ID);
+            }
+        })();
+    </script>
     <style>
         /* ============================================
            CSS VARIABLES & RESET
@@ -685,12 +709,17 @@
 
             .instructions {
                 display: none;
-                /* Hide keyboard instructions on touch */
+            }
+        }
+
+        /* Also show d-pad on small screens (for mobile view testing) */
+        @media (max-width: 650px) {
+            .dpad-container {
+                display: block;
             }
 
-            .game-container {
-                padding-bottom: 220px;
-                /* Make room for d-pad */
+            .instructions {
+                display: none;
             }
         }
 
@@ -794,6 +823,33 @@
             .dpad {
                 grid-template-columns: 50px 50px 50px;
                 grid-template-rows: 50px 50px 50px;
+            }
+
+            /* Mobile layout: no scrolling, all content fits in viewport */
+            body {
+                height: 100vh;
+                height: 100dvh;
+                /* Dynamic viewport height for mobile browsers */
+                overflow: hidden;
+                justify-content: flex-start;
+                padding-top: 10px;
+            }
+
+            .game-container {
+                flex: 1;
+                justify-content: flex-start;
+                min-height: 0;
+                /* Allow flex shrinking */
+                padding-bottom: 180px;
+                /* Room for fixed d-pad */
+            }
+
+            /* D-pad: always fixed at bottom on mobile */
+            .dpad-container {
+                position: fixed;
+                bottom: 10px;
+                left: 50%;
+                transform: translateX(-50%);
             }
         }
 
@@ -1173,7 +1229,10 @@
             // Reset game state
             GameState = {
                 grid: [],
-                playerPosition: { x: 0, y: 0 },
+                playerPosition: {
+                    x: Math.floor(Math.random() * GRID_SIZE),
+                    y: Math.floor(Math.random() * GRID_SIZE)
+                },
                 gameState: GAME_STATES.PLAYING,
                 stats: { itemsFound: 0, totalDigs: 0 },
                 foundItems: [],
@@ -1363,6 +1422,10 @@
                     newX = Math.min(GRID_SIZE - 1, newX + 1);
                     event.preventDefault();
                     break;
+                case ' ': // Spacebar to dig
+                    event.preventDefault();
+                    performDig(GameState.playerPosition.x, GameState.playerPosition.y);
+                    return;
                 default:
                     return; // Ignore other keys
             }

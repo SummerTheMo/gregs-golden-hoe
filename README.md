@@ -29,13 +29,18 @@ Help **Greg**, a friendly brown recluse spider, explore an 8-inch × 8-inch dirt
 
 ## 🕹️ Controls
 
+### Desktop
 | Action | Control |
 |--------|---------|
 | Move Up | `↑` Arrow Key |
 | Move Down | `↓` Arrow Key |
 | Move Left | `←` Arrow Key |
 | Move Right | `→` Arrow Key |
-| Dig | `Click` on Greg's current square |
+| Dig | `Spacebar` or `Click` on Greg's current square |
+
+### Mobile (Touch Devices)
+- **D-Pad** — Virtual directional pad appears on touch screens
+- **DIG Button** — Center button to dig at current position
 
 ---
 
@@ -106,16 +111,18 @@ When you win, you'll have the option to **donate to entomology and bug conservat
 
 ```
 gregs-golden-hoe/
-├── index.html    # Complete game (HTML + CSS + JavaScript)
-└── README.md     # This file
+├── index.html                         # Complete game (HTML + CSS + JavaScript)
+├── README.md                          # This file
+├── .gitignore                         # Standard gitignore
+└── .github/workflows/static.yaml      # GitHub Pages deployment workflow
 ```
 
 ---
 
 ## 🎯 Game Objective
 
-1. Move Greg around the 8×8 grid using arrow keys
-2. Click to dig at Greg's current position
+1. Move Greg around the 8×8 grid using arrow keys (or d-pad on mobile)
+2. Press spacebar or click to dig at Greg's current position
 3. Collect items in your inventory
 4. Keep digging until you find the **Golden Hoe**!
 5. Celebrate your victory! 🎉
@@ -136,7 +143,23 @@ const ITEM_FLY_DURATION = 800;        // Fly animation time
 
 ---
 
-## 📜 License
+## 📊 Google Analytics Setup
+
+This site uses Google Analytics 4 for tracking. The GA Measurement ID is injected during deployment via GitHub Actions.
+
+### Setup Steps:
+
+1. Go to your repository **Settings → Secrets and variables → Actions**
+2. Add a new **Repository secret** named `GA_MEASUREMENT_ID`
+3. Set the value to your GA4 Measurement ID (e.g., `G-XXXXXXXXXX`)
+
+The `static.yaml` workflow will automatically replace the placeholder `__GA_MEASUREMENT_ID__` in `index.html` during deployment.
+
+> **Note**: If the secret is not set, analytics will be disabled but the site will still work normally.
+
+---
+
+## �📜 License
 
 This project is open source and available for personal and educational use.
 
