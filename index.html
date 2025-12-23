@@ -68,7 +68,7 @@
             background: linear-gradient(135deg, var(--color-bg-dark) 0%, var(--color-bg-medium) 100%);
             font-family: 'Courier New', monospace;
             color: var(--color-white);
-            overflow: hidden;
+            overflow: auto;
         }
 
         .game-container {
@@ -101,34 +101,6 @@
             to {
                 text-shadow: 0 0 20px var(--color-gold-light), 0 0 40px var(--color-gold);
             }
-        }
-
-        /* ============================================
-           STATS DISPLAY
-           ============================================ */
-        .stats-bar {
-            display: flex;
-            gap: 30px;
-            padding: 15px 30px;
-            background: rgba(0, 0, 0, 0.5);
-            border: 2px solid var(--color-gold);
-            border-radius: 8px;
-            font-size: 1rem;
-        }
-
-        .stat-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .stat-label {
-            color: var(--color-gray);
-        }
-
-        .stat-value {
-            color: var(--color-gold);
-            font-weight: bold;
         }
 
         /* ============================================
@@ -473,6 +445,149 @@
             border: 1px solid var(--color-gray);
             margin: 0 2px;
         }
+
+        /* ============================================
+           INVENTORY BAR
+           ============================================ */
+        .inventory-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .inventory-label {
+            font-size: 1rem;
+            color: var(--color-gold);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .inventory-bar {
+            display: flex;
+            gap: 8px;
+            padding: 12px 20px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid var(--color-gold);
+            border-radius: 8px;
+            min-width: 400px;
+            min-height: 60px;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .inventory-slot {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .inventory-slot svg {
+            width: 30px;
+            height: 30px;
+        }
+
+        .inventory-slot.golden-hoe {
+            border-color: var(--color-gold);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+            animation: shimmer 1s ease-in-out infinite;
+        }
+
+        .inventory-empty-text {
+            color: var(--color-gray);
+            font-style: italic;
+            font-size: 0.9rem;
+        }
+
+        /* ============================================
+           ITEM FOUND OVERLAY
+           ============================================ */
+        .item-found-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 30px;
+            z-index: 150;
+        }
+
+        .item-found-overlay.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .item-found-title {
+            font-size: 2.5rem;
+            color: var(--color-gold);
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            text-shadow:
+                0 0 10px var(--color-gold),
+                0 0 20px var(--color-gold);
+            animation: pulseText 0.5s ease-in-out infinite alternate;
+        }
+
+        .item-found-name {
+            font-size: 1.5rem;
+            color: var(--color-white);
+            text-transform: capitalize;
+        }
+
+        .item-found-display {
+            width: 140px;
+            height: 140px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .item-found-display svg {
+            width: 120px;
+            height: 120px;
+            filter: drop-shadow(0 0 15px var(--color-gold)) drop-shadow(0 0 30px var(--color-gold));
+            animation: itemGlow 1s ease-in-out infinite alternate;
+        }
+
+        @keyframes itemGlow {
+            0% {
+                filter: drop-shadow(0 0 15px var(--color-gold)) drop-shadow(0 0 30px var(--color-gold));
+                transform: scale(1);
+            }
+
+            100% {
+                filter: drop-shadow(0 0 25px var(--color-gold-light)) drop-shadow(0 0 50px var(--color-gold));
+                transform: scale(1.05);
+            }
+        }
+
+        /* Flying item animation - animated via JavaScript */
+        .flying-item {
+            position: fixed;
+            z-index: 200;
+            pointer-events: none;
+            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .flying-item svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 0 10px var(--color-gold));
+        }
     </style>
 </head>
 
@@ -481,23 +596,11 @@
     <div class="game-container">
         <h1 class="game-title">Greg's Golden Hoe</h1>
 
-        <!-- Stats Bar -->
-        <div class="stats-bar">
-            <div class="stat-item">
-                <span class="stat-label">Position:</span>
-                <span class="stat-value" id="positionDisplay">(0, 0)</span>
-            </div>
-            <div class="stat-item">
-                <span class="stat-label">Digs:</span>
-                <span class="stat-value" id="digsDisplay">0</span>
-            </div>
-            <div class="stat-item">
-                <span class="stat-label">Items Found:</span>
-                <span class="stat-value" id="itemsDisplay">0</span>
-            </div>
-            <div class="stat-item">
-                <span class="stat-label">Remaining:</span>
-                <span class="stat-value" id="remainingDisplay">64</span>
+        <!-- Inventory (above grid) -->
+        <div class="inventory-container">
+            <span class="inventory-label">Inventory</span>
+            <div class="inventory-bar" id="inventoryBar">
+                <span class="inventory-empty-text">Dig to find items!</span>
             </div>
         </div>
 
@@ -513,6 +616,13 @@
             Move Greg &nbsp;|&nbsp;
             <span class="key-hint">Click</span> to Dig
         </div>
+    </div>
+
+    <!-- Item Found Overlay -->
+    <div class="item-found-overlay" id="itemFoundOverlay">
+        <div class="item-found-title">✨ Item Found! ✨</div>
+        <div class="item-found-display" id="itemFoundDisplay"></div>
+        <div class="item-found-name" id="itemFoundName"></div>
     </div>
 
     <!-- Celebration Overlay -->
@@ -562,10 +672,13 @@
         const GOLDEN_HOE_CHANCE = 0.10;         // 10% chance per dig (1/10)
         const CELEBRATION_DURATION = 15000;      // 15 seconds in milliseconds
         const MOVE_COOLDOWN = 100;              // Prevent movement spam (ms)
+        const ITEM_DISPLAY_DURATION = 3000;     // 3 seconds for item found overlay
+        const ITEM_FLY_DURATION = 800;          // 0.8 seconds for fly animation
 
         // Game state enum values
         const GAME_STATES = {
             PLAYING: 'playing',
+            SHOWING_ITEM: 'showing_item',       // New state for item display
             CELEBRATING: 'celebrating',
             WON: 'won'
         };
@@ -599,6 +712,21 @@
             ITEM_TYPES.LETTUCE,
             ITEM_TYPES.ONION
         ];
+
+        // Human-readable item names for display
+        const ITEM_NAMES = {
+            [ITEM_TYPES.RAKE]: 'Rake',
+            [ITEM_TYPES.SHOVEL]: 'Shovel',
+            [ITEM_TYPES.PITCHFORK]: 'Pitchfork',
+            [ITEM_TYPES.CHISEL]: 'Chisel',
+            [ITEM_TYPES.FISHING_ROD]: 'Broken Fishing Rod',
+            [ITEM_TYPES.CARROT]: 'Carrot',
+            [ITEM_TYPES.POTATO]: 'Potato',
+            [ITEM_TYPES.TOMATO]: 'Tomato',
+            [ITEM_TYPES.LETTUCE]: 'Lettuce',
+            [ITEM_TYPES.ONION]: 'Onion',
+            [ITEM_TYPES.GOLDEN_HOE]: 'Golden Hoe'
+        };
 
         // ============================================
         // SVG SPRITE DEFINITIONS
@@ -791,12 +919,22 @@
                 foundItems: [],
                 lastMoveTime: 0,
                 celebrationStartTime: 0,
-                animationFrameId: null
+                animationFrameId: null,
+                pendingGoldenHoe: false,        // Track if golden hoe was found
+                itemDisplayStartTime: 0          // For item display timing
             };
 
             // Hide overlays
             document.getElementById('celebrationOverlay').classList.remove('active');
             document.getElementById('winScreen').classList.remove('active');
+            document.getElementById('itemFoundOverlay').classList.remove('active');
+
+            // Clear inventory display
+            const inventoryBar = document.getElementById('inventoryBar');
+            inventoryBar.innerHTML = '<span class="inventory-empty-text">Dig to find items!</span>';
+
+            // Remove any flying items
+            document.querySelectorAll('.flying-item').forEach(el => el.remove());
 
             // Clear any existing confetti
             document.querySelectorAll('.confetti').forEach(c => c.remove());
@@ -811,7 +949,6 @@
             renderGrid();
 
             // Update the stats display
-            updateStatsDisplay();
 
             // Start the game loop
             startGameLoop();
@@ -976,7 +1113,6 @@
                 GameState.playerPosition.y = newY;
                 GameState.lastMoveTime = now;
                 updateGregPosition();
-                updateStatsDisplay();
             }
         }
 
@@ -1029,7 +1165,7 @@
             // Create dig particle effect
             createDigEffect(cell.element);
 
-            // Check for golden hoe (25% chance)
+            // Check for golden hoe (10% chance)
             const foundGoldenHoe = Math.random() < GOLDEN_HOE_CHANCE;
 
             if (foundGoldenHoe) {
@@ -1037,16 +1173,146 @@
                 cell.item = ITEM_TYPES.GOLDEN_HOE;
                 GameState.stats.itemsFound++;
                 GameState.foundItems.push(ITEM_TYPES.GOLDEN_HOE);
+                GameState.pendingGoldenHoe = true;
                 revealItem(cell);
-                startCelebration();
+                // Show the item display overlay, celebration will start after
+                showItemFoundOverlay(ITEM_TYPES.GOLDEN_HOE);
             } else if (cell.item !== ITEM_TYPES.EMPTY) {
                 // Found a pre-placed item
                 GameState.stats.itemsFound++;
                 GameState.foundItems.push(cell.item);
                 revealItem(cell);
+                // Show the item display overlay
+                showItemFoundOverlay(cell.item);
             }
 
-            updateStatsDisplay();
+        }
+
+        /**
+         * Show the item found overlay with the discovered item
+         * @param {string} itemType - The type of item found
+         */
+        function showItemFoundOverlay(itemType) {
+            console.log('Showing item found overlay for:', itemType);
+
+            // Change game state to prevent movement
+            GameState.gameState = GAME_STATES.SHOWING_ITEM;
+            GameState.itemDisplayStartTime = performance.now();
+
+            // Update overlay content
+            const overlay = document.getElementById('itemFoundOverlay');
+            const display = document.getElementById('itemFoundDisplay');
+            const name = document.getElementById('itemFoundName');
+
+            // Set the item sprite at 4x size (handled by CSS)
+            display.innerHTML = SPRITES[itemType] || '';
+            name.textContent = ITEM_NAMES[itemType] || itemType;
+
+            // Show overlay
+            overlay.classList.add('active');
+
+            // After 3 seconds, hide overlay and animate item to inventory
+            setTimeout(() => {
+                hideItemFoundOverlayAndAnimate(itemType);
+            }, ITEM_DISPLAY_DURATION);
+        }
+
+        /**
+         * Hide the item found overlay and animate the item flying to inventory
+         * @param {string} itemType - The type of item to animate
+         */
+        function hideItemFoundOverlayAndAnimate(itemType) {
+            const overlay = document.getElementById('itemFoundOverlay');
+            const display = document.getElementById('itemFoundDisplay');
+
+            // Get the position of the display item
+            const displayRect = display.getBoundingClientRect();
+
+            // Create flying item element
+            const flyingItem = document.createElement('div');
+            flyingItem.className = 'flying-item';
+            flyingItem.innerHTML = SPRITES[itemType] || '';
+
+            // Set initial position and size (same as display)
+            flyingItem.style.left = displayRect.left + 'px';
+            flyingItem.style.top = displayRect.top + 'px';
+            flyingItem.style.width = displayRect.width + 'px';
+            flyingItem.style.height = displayRect.height + 'px';
+
+            document.body.appendChild(flyingItem);
+
+            // Hide the overlay
+            overlay.classList.remove('active');
+
+            // Get target position (inventory bar)
+            const inventoryBar = document.getElementById('inventoryBar');
+            const inventoryRect = inventoryBar.getBoundingClientRect();
+
+            // Calculate target position (center of inventory, but at slot size)
+            const targetSize = 40; // Same as inventory slot
+            const targetX = inventoryRect.left + (inventoryRect.width / 2) - (targetSize / 2);
+            const targetY = inventoryRect.top + (inventoryRect.height / 2) - (targetSize / 2);
+
+            // Force reflow to ensure transition works
+            flyingItem.offsetHeight;
+
+            // Animate to inventory position
+            flyingItem.style.left = targetX + 'px';
+            flyingItem.style.top = targetY + 'px';
+            flyingItem.style.width = targetSize + 'px';
+            flyingItem.style.height = targetSize + 'px';
+
+            // After animation completes, add to inventory and remove flying item
+            setTimeout(() => {
+                flyingItem.remove();
+                addItemToInventory(itemType);
+
+                // Check if we need to start celebration (golden hoe was found)
+                if (GameState.pendingGoldenHoe) {
+                    GameState.pendingGoldenHoe = false;
+                    startCelebration();
+                } else {
+                    // Return to playing state
+                    GameState.gameState = GAME_STATES.PLAYING;
+                }
+            }, ITEM_FLY_DURATION);
+        }
+
+        /**
+         * Add an item to the inventory bar display
+         * @param {string} itemType - The type of item to add
+         */
+        function addItemToInventory(itemType) {
+            const inventoryBar = document.getElementById('inventoryBar');
+
+            // Remove empty text if present
+            const emptyText = inventoryBar.querySelector('.inventory-empty-text');
+            if (emptyText) {
+                emptyText.remove();
+            }
+
+            // Create inventory slot
+            const slot = document.createElement('div');
+            slot.className = 'inventory-slot';
+            slot.innerHTML = SPRITES[itemType] || '';
+            slot.title = ITEM_NAMES[itemType] || itemType;
+
+            // Add special styling for golden hoe
+            if (itemType === ITEM_TYPES.GOLDEN_HOE) {
+                slot.classList.add('golden-hoe');
+            }
+
+            // Add with a small animation
+            slot.style.transform = 'scale(0)';
+            inventoryBar.appendChild(slot);
+
+            // Trigger animation
+            requestAnimationFrame(() => {
+                slot.style.transition = 'transform 0.3s ease';
+                slot.style.transform = 'scale(1)';
+            });
+
+            console.log('Added', itemType, 'to inventory');
         }
 
         /**
@@ -1126,24 +1392,7 @@
             currentCell.element.appendChild(gregElement);
         }
 
-        /**
-         * Update the stats display bar
-         */
-        function updateStatsDisplay() {
-            document.getElementById('positionDisplay').textContent =
-                `(${GameState.playerPosition.x}, ${GameState.playerPosition.y})`;
-            document.getElementById('digsDisplay').textContent = GameState.stats.totalDigs;
-            document.getElementById('itemsDisplay').textContent = GameState.stats.itemsFound;
 
-            // Calculate remaining undug squares
-            let remaining = 0;
-            for (let y = 0; y < GRID_SIZE; y++) {
-                for (let x = 0; x < GRID_SIZE; x++) {
-                    if (!GameState.grid[y][x].isDug) remaining++;
-                }
-            }
-            document.getElementById('remainingDisplay').textContent = remaining;
-        }
 
         // ============================================
         // CELEBRATION & WIN
