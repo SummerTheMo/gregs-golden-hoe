@@ -428,6 +428,36 @@
             transform: scale(0.98);
         }
 
+        .donate-btn {
+            padding: 12px 30px;
+            font-size: 1rem;
+            font-family: 'Courier New', monospace;
+            background: var(--color-green);
+            color: var(--color-white);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            letter-spacing: 1px;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .donate-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 25px rgba(76, 175, 80, 0.5);
+            background: #66bb6a;
+        }
+
+        .donate-btn:active {
+            transform: scale(0.98);
+        }
+
+        .donate-emoji {
+            margin-right: 8px;
+        }
+
         /* ============================================
            INSTRUCTIONS
            ============================================ */
@@ -649,6 +679,9 @@
             <div class="items-collected" id="itemsCollected"></div>
         </div>
         <button class="restart-btn" id="restartBtn">Play Again</button>
+        <a href="https://secure.qgiv.com/event/p2ppollevent2024/account/1776902/" target="_blank" class="donate-btn">
+            <span class="donate-emoji">🐛</span>Donate to Entomology and Bug Conservation Works
+        </a>
     </div>
 
     <script>
