@@ -7,7 +7,7 @@ This document provides guidance for GitHub Copilot Coding Agent when working on 
 **Greg's Golden Hoe** is a retro 8-bit arcade browser game featuring Greg the friendly brown recluse spider. The game is a pure HTML5/CSS3/JavaScript application with zero dependencies and no build process.
 
 ### Key Characteristics
-- **Single-file application**: The entire game is contained in `index.html` (~2000 lines)
+- **Single-file application**: The entire game is contained in `index.html` (~1997 lines)
 - **Zero dependencies**: No external libraries, frameworks, or build tools
 - **Pure web technologies**: HTML5, CSS3, and ES6+ JavaScript only
 - **Browser-based**: Runs directly in any modern browser without installation
@@ -31,7 +31,7 @@ gregs-golden-hoe/
 ### Game Structure
 The game follows a modular, component-based architecture within the single HTML file:
 
-1. **HTML Section** (Lines 1-1001)
+1. **HTML Section** (Lines 1-1000)
    - Semantic HTML structure
    - Game grid container
    - UI overlays (celebration, win screen, item found)
@@ -48,14 +48,14 @@ The game follows a modular, component-based architecture within the single HTML 
    - Centralized state management (`GameState` object)
    - Event-driven input handling
    - requestAnimationFrame-based game loop
-   - SVG sprite definitions
+   - SVG sprite definitions (Lines 1087-1218)
    - Modular function organization
 
 ### Key Constants
-Located at the top of JavaScript section (Lines 1019-1077):
+Located at the top of JavaScript section (Lines 1019-1024):
 ```javascript
 const GRID_SIZE = 8;                  // 8x8 grid
-const GOLDEN_HOE_CHANCE = 0.10;       // 10% per dig
+const GOLDEN_HOE_CHANCE = 0.1;        // 10% per dig (1/10)
 const CELEBRATION_DURATION = 15000;   // 15 seconds
 const ITEM_DISPLAY_DURATION = 3000;   // Item overlay time
 const ITEM_FLY_DURATION = 800;        // Fly animation time
@@ -162,7 +162,7 @@ python3 -m http.server 8000
 4. Create SVG sprite in `SPRITES` object (Lines 1087-1218)
 
 ### Adjusting Game Difficulty
-- Modify `GOLDEN_HOE_CHANCE` (Line 1020) - default is 0.10 (10%)
+- Modify `GOLDEN_HOE_CHANCE` (Line 1020) - default is 0.1 (10%)
 - Change `GRID_SIZE` (Line 1019) - default is 8x8
 
 ### Updating Celebration Duration
