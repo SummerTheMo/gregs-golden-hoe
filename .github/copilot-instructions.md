@@ -31,7 +31,7 @@ gregs-golden-hoe/
 ### Game Structure
 The game follows a modular, component-based architecture within the single HTML file:
 
-1. **HTML Section** (Lines 1-1000)
+1. **HTML Section** (Lines 1-914 head, 916-1001 body)
    - Semantic HTML structure
    - Game grid container
    - UI overlays (celebration, win screen, item found)
@@ -44,7 +44,7 @@ The game follows a modular, component-based architecture within the single HTML 
    - CSS animations and transitions
 
 3. **JavaScript Section** (Lines 1002-1994)
-   - Constants-driven configuration
+   - Constants-driven configuration (Lines 1019-1077)
    - Centralized state management (`GameState` object)
    - Event-driven input handling
    - requestAnimationFrame-based game loop
@@ -52,7 +52,7 @@ The game follows a modular, component-based architecture within the single HTML 
    - Modular function organization
 
 ### Key Constants
-Located at the top of JavaScript section (Lines 1019-1024):
+Located at the top of JavaScript section (Lines 1019-1077), including:
 ```javascript
 const GRID_SIZE = 8;                  // 8x8 grid
 const GOLDEN_HOE_CHANCE = 0.1;        // 10% per dig (1/10)
@@ -60,6 +60,8 @@ const CELEBRATION_DURATION = 15000;   // 15 seconds
 const ITEM_DISPLAY_DURATION = 3000;   // Item overlay time
 const ITEM_FLY_DURATION = 800;        // Fly animation time
 ```
+
+Additional constants include `GAME_STATES`, `ITEM_TYPES`, `PREPLACED_ITEMS`, and `ITEM_NAMES`.
 
 ### State Management
 - Centralized `GameState` object manages all game data
