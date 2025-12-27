@@ -31,14 +31,16 @@ gregs-golden-hoe/
 ### Game Structure
 The game follows a modular, component-based architecture within the single HTML file:
 
-1. **HTML Section** (Lines 1-914 head, 916-1001 body)
+1. **HTML Section** (Lines 1-1995)
+   - Head section (Lines 1-914): Meta tags, analytics, and CSS
+   - Body section (Lines 916-1995): Game UI and interactive elements
    - Semantic HTML structure
    - Game grid container
    - UI overlays (celebration, win screen, item found)
    - Mobile D-pad controls
 
 2. **CSS Section** (Lines 57-913)
-   - CSS custom properties (variables) for theming
+   - CSS custom properties (variables) for theming (Lines 61-84)
    - Retro 8-bit aesthetic with pixel art styling
    - Responsive design with mobile breakpoints
    - CSS animations and transitions
