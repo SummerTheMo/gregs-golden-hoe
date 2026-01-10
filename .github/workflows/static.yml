@@ -32,14 +32,16 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Inject Google Analytics ID
+        if: ${{ secrets.GA_MEASUREMENT_ID != '' }}
         run: |
           # Replace the placeholder with the actual GA Measurement ID from secrets
-          if [ -n "${{ secrets.GA_MEASUREMENT_ID }}" ]; then
-            sed -i "s/__GA_MEASUREMENT_ID__/${{ secrets.GA_MEASUREMENT_ID }}/g" index.html
-            echo "Google Analytics ID injected successfully"
-          else
-            echo "Warning: GA_MEASUREMENT_ID secret not set, analytics will be disabled"
-          fi
+          sed -i "s/__GA_MEASUREMENT_ID__/${{ secrets.GA_MEASUREMENT_ID }}/g" index.html
+          echo "Google Analytics ID injected successfully"
+      
+      - name: Analytics disabled notification
+        if: ${{ secrets.GA_MEASUREMENT_ID == '' }}
+        run: |
+          echo "Warning: GA_MEASUREMENT_ID secret not set, analytics will be disabled"
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
