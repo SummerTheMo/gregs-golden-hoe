@@ -39,7 +39,7 @@ jobs:
           echo "Google Analytics ID injected successfully"
       
       - name: Analytics disabled notification
-        if: '!secrets.GA_MEASUREMENT_ID'
+        if: ${{ !secrets.GA_MEASUREMENT_ID }}
         run: |
           echo "Warning: GA_MEASUREMENT_ID secret not set, analytics will be disabled"
 
