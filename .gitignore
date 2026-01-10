@@ -6,3 +6,6 @@ Thumbs.db
 *.swp
 *.swo
 *~
+
+# Tools downloaded for validation
+actionlint
