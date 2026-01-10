@@ -32,14 +32,18 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Inject Google Analytics ID
-        if: secrets.GA_MEASUREMENT_ID
+        env:
+          GA_ID: ${{ secrets.GA_MEASUREMENT_ID }}
+        if: env.GA_ID != ''
         run: |
           # Replace the placeholder with the actual GA Measurement ID from secrets
-          sed -i "s/__GA_MEASUREMENT_ID__/${{ secrets.GA_MEASUREMENT_ID }}/g" index.html
+          sed -i "s/__GA_MEASUREMENT_ID__/${GA_ID}/g" index.html
           echo "Google Analytics ID injected successfully"
-      
+
       - name: Analytics disabled notification
-        if: ${{ !secrets.GA_MEASUREMENT_ID }}
+        env:
+          GA_ID: ${{ secrets.GA_MEASUREMENT_ID }}
+        if: env.GA_ID == ''
         run: |
           echo "Warning: GA_MEASUREMENT_ID secret not set, analytics will be disabled"
 
