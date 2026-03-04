@@ -29,7 +29,7 @@
         // Only initialize if placeholder has been replaced with actual ID
         if (
           GA_MEASUREMENT_ID &&
-          GA_MEASUREMENT_ID !== "__GA_MEASUREMENT_ID__" &&
+          GA_MEASUREMENT_ID !== ("__GA_MEASUREMENT" + "_ID__") &&
           GA_MEASUREMENT_ID.startsWith("G-")
         ) {
           // Load gtag.js dynamically
